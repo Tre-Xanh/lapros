@@ -1,7 +1,7 @@
 ---
 author: "Vo Chi Cong"
-title: "Tìm lỗi quan sát nhãn dữ liệu"
-date: 8th July 2022
+title: "Xếp hạng nhãn dữ liệu khả nghi"
+date: July 2022
 
 ---
 
@@ -124,9 +124,14 @@ lưu số phần tử của các tập $\hat{\X}_{\ytilde=i,\ystar=j}$,
 $\C_{\ytilde=i,\ystar=j} \defined  |\hat{\X}_{\ytilde=i,\ystar=j} |.$
 
 Số lượng mẫu được quan sát có nhãn $\ytilde=i$ là
+
 $\vect{C}_{\ytilde=i} \defined |\X_{\ytilde=i}|.$
+
 Vì $(\ref{eq1})$ chỉ là ước lượng của $\X_{\ytilde=i,\ystar=j}$ cho nên
-nếu đặt $\C_{\ytilde=i} \defined \sum_{j\in[m]}\C_{\ytilde=i,\ystar=j}$
+nếu đặt
+
+$\C_{\ytilde=i} \defined \sum_{j\in[m]}\C_{\ytilde=i,\ystar=j}$
+
 thì có thể
 $\C_{\ytilde=i} \neq \vect{C}_{\ytilde=i}.$
 
@@ -137,8 +142,9 @@ Ví dụ $\C_{\ytilde=3,\ystar=1} = 10$ có nghĩa là, ta đếm được
 
 Độ tự tin trung bình trong lớp $i\in[m]$ là
 
-$t_i = \frac{1}{\C_{\ytilde=i}} \sum_{\x\in\X_{\ytilde=i}}
-\hat{p}(\ytilde=i; \vect{x},\model)
+$t_i = \frac{ \sum_{\x\in\X_{\ytilde=i}}
+\hat{p}(\ytilde=i; \vect{x},\model)}
+{\vect{C}_{\ytilde=i}}
 \label{eq2}\tag{2}$
 
 
@@ -146,7 +152,8 @@ $t_i = \frac{1}{\C_{\ytilde=i}} \sum_{\x\in\X_{\ytilde=i}}
 
 Hiệu chỉnh ma trận đếm cặp nhãn qua hai bước
 1. Hiệu chỉnh từng dòng theo số mẫu của từng lớp đã quan sát $i\in[m]$
-$\check{Q}_{\ytilde=i,\ystar=j} = \C_{\ytilde=i,\ystar=j}\frac{\vect{C}_{\ytilde=i}}{\C_{\ytilde=i}}\label{eq3a}\tag{3a}$
+$\check{Q}_{\ytilde=i,\ystar=j} = \frac{\C_{\ytilde=i,\ystar=j}}{\C_{\ytilde=i}}
+{\vect{C}_{\ytilde=i}}\label{eq3a}\tag{3a}$
 2. Chia đều toàn bộ để tổng số các yếu tố trở thành $1$
 $\hat{Q}_{\ytilde=i,\ystar=j}=\frac{\check{Q}_{\ytilde=i,\ystar=j}}{\sum_{i\in[m],j\in[m]}\check{Q}_{\ytilde=i,\ystar=j}}\label{eq3b}\tag{3b}$
 

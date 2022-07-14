@@ -3,7 +3,7 @@
 <HEAD>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Tìm lỗi quan sát nhãn dữ liệu</title>
+  <title>Xếp hạng nhãn dữ liệu khả nghi</title>
   
 
   <script type="text/x-mathjax-config">
@@ -653,9 +653,9 @@ div.title {text-align: center;}
     <div class = "row">
       <div class = "col-md-12 twelve columns">
         <div class="title">
-          <h1 class="title">Tìm lỗi quan sát nhãn dữ liệu</h1>
+          <h1 class="title">Xếp hạng nhãn dữ liệu khả nghi</h1>
           <h5>Vo Chi Cong</h5>
-          <h5>8th July 2022</h5>
+          <h5>July 2022</h5>
         </div>
 
         <p class="math">\[
@@ -744,13 +744,22 @@ p(\ytilde| \ystar; \vect{x}) = p(\ytilde| \ystar) \forall\vect{x}.
 <p class="math">\[
 \C_{\ytilde=i,\ystar=j} \defined  |\hat{\X}_{\ytilde=i,\ystar=j} |.
 \]</p>
-<p>Số lượng mẫu được quan sát có nhãn <span class="math">$\ytilde=i$</span> là <span class="math">$\vect{C}_{\ytilde=i} \defined |\X_{\ytilde=i}|.$</span> Vì <span class="math">$(\ref{eq1})$</span> chỉ là ước lượng của <span class="math">$\X_{\ytilde=i,\ystar=j}$</span> cho nên nếu đặt <span class="math">$\C_{\ytilde=i} \defined \sum_{j\in[m]}\C_{\ytilde=i,\ystar=j}$</span> thì có thể <span class="math">$\C_{\ytilde=i} \neq \vect{C}_{\ytilde=i}.$</span></p>
+<p>Số lượng mẫu được quan sát có nhãn <span class="math">$\ytilde=i$</span> là</p>
+<p class="math">\[
+\vect{C}_{\ytilde=i} \defined |\X_{\ytilde=i}|.
+\]</p>
+<p>Vì <span class="math">$(\ref{eq1})$</span> chỉ là ước lượng của <span class="math">$\X_{\ytilde=i,\ystar=j}$</span> cho nên nếu đặt</p>
+<p class="math">\[
+\C_{\ytilde=i} \defined \sum_{j\in[m]}\C_{\ytilde=i,\ystar=j}
+\]</p>
+<p>thì có thể <span class="math">$\C_{\ytilde=i} \neq \vect{C}_{\ytilde=i}.$</span></p>
 <p>Ví dụ <span class="math">$\C_{\ytilde=3,\ystar=1} = 10$</span> có nghĩa là, ta đếm được 10 mẫu được gán nhãn <span class="math">$3$</span> nhưng &quot;thật ra&quot; nên có nhãn <span class="math">$1$</span>.</p>
 <h3>Độ tự tin trung bình</h3>
 <p>Độ tự tin trung bình trong lớp <span class="math">$i\in[m]$</span> là</p>
 <p class="math">\[
-t_i = \frac{1}{\C_{\ytilde=i}} \sum_{\x\in\X_{\ytilde=i}}
-\hat{p}(\ytilde=i; \vect{x},\model)
+t_i = \frac{ \sum_{\x\in\X_{\ytilde=i}}
+\hat{p}(\ytilde=i; \vect{x},\model)}
+{\vect{C}_{\ytilde=i}}
 \label{eq2}\tag{2}
 \]</p>
 <h3>Ước lượng ma trận nhiễu</h3>
@@ -760,7 +769,8 @@ t_i = \frac{1}{\C_{\ytilde=i}} \sum_{\x\in\X_{\ytilde=i}}
 </li>
 </ol>
 <p class="math">\[
-\check{Q}_{\ytilde=i,\ystar=j} = \C_{\ytilde=i,\ystar=j}\frac{\vect{C}_{\ytilde=i}}{\C_{\ytilde=i}}\label{eq3a}\tag{3a}
+\check{Q}_{\ytilde=i,\ystar=j} = \frac{\C_{\ytilde=i,\ystar=j}}{\C_{\ytilde=i}}
+{\vect{C}_{\ytilde=i}}\label{eq3a}\tag{3a}
 \]</p>
 <ol start="2">
 <li><p>Chia đều toàn bộ để tổng số các yếu tố trở thành <span class="math">$1$</span></p>
@@ -806,7 +816,7 @@ t_i = \frac{1}{\C_{\ytilde=i}} \sum_{\x\in\X_{\ytilde=i}}
         <div class="footer">
           <p>
             Published from <a href="denoise.jmd">denoise.jmd</a>
-            using <a href="http://github.com/JunoLab/Weave.jl">Weave.jl</a> v0.10.9 on 2022-07-08.
+            using <a href="http://github.com/JunoLab/Weave.jl">Weave.jl</a> v0.10.9 on 2022-07-14.
           </p>
         </div>
       </div>
