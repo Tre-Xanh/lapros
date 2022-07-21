@@ -1,0 +1,233 @@
+---
+title: "LaPros"
+author: "Chi Cong Vo"
+date: "July 2022"
+site: bookdown::bookdown_site
+documentclass: article
+output:
+  bookdown::gitbook:
+    number_sections: false
+  bookdown::pdf_book:
+    latex_engine: xelatex
+---
+
+\newcommand{\yt}{\dot{y}}
+\newcommand{\yo}{\tilde{y}}
+\newcommand{\vect}[1]{{\boldsymbol{{#1}}}}
+\newcommand{\x}{\vect{x}}
+\newcommand{\thres}{\vect{t}}
+\newcommand{\X}{\vect{X}}
+\newcommand{\Xt}{\dot{\X}}
+\newcommand{\Xc}{{\X}}
+\newcommand{\model}{{\vect{\phi}}}
+\newcommand{\C}{{\vect{C}}}
+\newcommand{\Ccheck}{\check{\vect{C}}}
+\newcommand{\pt}{\dot{p}}
+\newcommand{\pc}{{p}}
+\newcommand{\ec}{{e}}
+\newcommand{\Qt}{\dot{\vect{Q}}}
+\newcommand{\Qc}{\vect{Q}}
+\newcommand{\amax}{\mathop{\rm arg~max}\limits}
+\newcommand{\defined}{≔}
+
+# Mở đầu
+
+Có một bộ dữ liệu bảng số, được gắn nhãn để phân loại, ví dụ nhãn dương tính và âm tính. Giả sử các nhãn dương tính có độ tin cậy cao, còn các nhãn âm tính có độ tin cậy thấp hơn, có thể xem như chứa cả dữ liệu dương tính chưa bộc phát. Lấy ví dụ với dữ liệu đánh giá tín dụng thì những ca vỡ nợ sẽ có nhãn dương tính. Với dữ liệu khám nghiệm ung thư thì những ca đã phát bệnh là dương tính.
+
+_Giả sử phân bố nhãn trong bộ dữ liệu trên có tương quan đủ mạnh với phân bố nhãn tiềm ẩn thật sự_. Trong phân bố nhãn có tiềm ẩn tính đa dạng, bất định mang tính bản chất. Ví dụ có 10 người có các thuộc tính xấu gần giống nhau, nhưng sẽ trong đó sẽ chỉ có 8 người ngẫu nhiên nào đó vỡ nợ, hoặc bị ung thư.
+
+Bộ dữ liệu trên có một số lượng nhất định các nhãn bị gắn sai. Có thể nào xác định được ranh giới để phân biệt được lỗi gắn nhãn với tính bất định bản chất của dữ liệu hay không?
+
+_Giả sử rằng suất nhãn bị gán sai không phụ thuộc vào từng ca dữ liệu cụ thể mà chỉ phụ thuộc vào đặc tính của các lớp nhãn dữ liệu_. Ví dụ trường hợp phân loại 3 loài vật là chó, mèo và chuột, thì xác suất nhầm chó với mèo cao hơn là nhầm mèo với chuột hoặc chó với chuột.
+
+Có một mô hình dự đoán xác suất dương tính đối với bộ dữ liệu nêu trên. _Giả sử xác suất do mô hình đưa ra có tương quan đủ mạnh đối với phân bố thật sự của nhãn_.
+
+Với những giả sử nêu trên, ta có thể ước lượng được xác suất nhãn gắn trên một ca dữ liệu là thật sự đúng hay không?
+
+## Lỗi quan sát nhãn là gì?
+
+Với một đối tượng khảo sát, quan sát viên sẽ quan sát, xem xét, nghiên cứu rồi gán một nhãn nhất định cho dữ liệu đó. Trong môi trường lý tưởng thì ta sẽ nhận định và gán đúng nhãn “chân lý" cho đối tượng.
+
+Ví dụ ta có thể quan sát ngực, bụng, mông của một người nào đó và nhận định giới tính. Trong thực tế thì có thể xảy ra nhầm lẫn ở một bước nào đó trong quá trình từ khi bắt đầu quan sát cho đến khi gắn xong nhãn. Nhầm lẫn đó có thể dẫn tới gán nhầm nhãn “Nam” cho đối tượng vốn là “Nữ”, hoặc ngược lại. Chúng ta gọi "lỗi quan sát nhãn" và "lỗi gắn nhãn" với cùng một ý nghĩa.
+
+Có thể có một số nam giới và nữ giới có số đo 3 vòng khá giống nhau, nhưng “đương nhiên" họ có 2 giới tính khác nhau, tức là các nhãn “chân lý" của họ là khác nhau về bản chất, chứ không nhất thiết có liên quan đến việc gắn nhãn có lỗi hay không.
+
+Nói cách khác từ số đo 3 vòng ta có thể không suy đoán được chắc chắn 100% nhưng có thể tính được xác suất giới tính Nam/Nữ của đối tượng. Quy tắc hay mô hình suy đoán có thể học được từ một tập dữ liệu có số đo 3 vòng và giới tính tương ứng của nhiều mẫu người khác nhau. Nếu trong tập dữ liệu này có những nhãn giới tính bị gắn sai thì việc học xác suất “chân lý” sẽ bị lệch lạc.
+
+## Quy trình nhiễu theo lớp
+
+Giả sử có một bộ dữ liệu số được gắn nhãn phân loại thành $m$ lớp khác nhau
+$M \defined {1,2,\ldots,m}$.
+Giả sử đối với mỗi mẫu dữ liệu ta có một nhãn "tiềm ẩn" thật là $\yt$.
+Trước khi quan sát được nhãn $\yo$, giả sử có một quy trình gây nhiễu
+biến $\yt=j$ thành $\yo=i$ với xác suất
+$\pt(\yo=i, \yt=j)$ chỉ phụ thuộc vào $i,j \in M$ và độc lập với các mẫu dữ liệu cụ thể,
+
+$$\pt(\yo| \yt; \vect{x}) \equiv \pt(\yo| \yt) \forall\vect{x}.$$
+
+Ví dụ khi phân loại 3 loài vật là chó, mèo và chuột, thì xác suất nhầm chó với mèo cao hơn là nhầm mèo với chuột hoặc chó với chuột, và xác suất đó không phụ thuộc vào từng con thú cụ thể. Giả sử này là hợp lý và thường được sử dụng trong các nghiên cứu về xử lý nhiễu (Goldberger and Ben-Reuven, 2017; Sukhbaatar et al., 2015).
+
+## Ma trận nhiễu theo lớp
+
+$$\Qt_{\yo, \yt} \defined \left[ {\begin{array}{ccc}
+    \pt(\yo=1, \yt=1) & \ldots & \pt(\yo=1, \yt=m) \\
+    \vdots & \pt(\yo=i, \yt=j) & \vdots \\
+    \pt(\yo=m, \yt=1) & \ldots & \pt(\yo=m, \yt=m) \\
+  \end{array} } \right]$$
+
+là ma trận kích thước $m\times m$ thể hiện phân phối xác suất đồng thời cho $\yo$ và $\yt.$
+
+**Độ thưa** là tỷ lệ số $0$ chiếm lĩnh các vị trí ngoại trừ đường chéo của ma trận $\Qt_{\yo,\yt}$: độ thưa bằng $0$ nói rằng mọi tỷ lệ nhiễu $p_{\yo,\yt}$ đều khác $0$, còn độ thưa $1$ thể hiện tình trạng lý tưởng, hoàn toàn không có nhiễu trong nhãn.
+
+Gọi $\X_{\yo=i}$ là tập hợp các mẫu $\x$ đã được gán nhãn $\yo=i$.
+**Độ tự tin** $\pc_\model(\yo=i; \vect{x}\in\vect{X}_{\yo=i})$
+là xác suất mô hình $\model$ đưa ra đối với mẫu $\vect{x}$, dự đoán nó có label đúng như label $\yo$ đã được gán. *Độ tự tin thấp là một dấu hiệu của khả năng nhãn có lỗi.*
+
+# Đánh giá độ khả nghi
+
+## Khái quát
+
+**Đầu vào**
+
+1. Các nhãn $\yo_k$ đã quan sát được đối với các mẫu $\x_k\in\X$
+2. Xác suất $\pc(\yo=i; \vect{x}_k\in\vect{X})$ mà mô hình $\model$ dự đoán mẫu $\x_k\in\X$ có nhãn $i\in M$
+
+**Các bước**
+
+1. Tính $t_i$, độ tự tin trung bình theo $\model$ trong từng lớp $i\in M$
+2. Ước lượng phân bố xác suất đồng thời $\Qt_{\yo, \yt}$ cho nhãn quan sát và nhãn thật
+3. *Lọc và xếp hạng các mẫu theo mức độ khả nghi nhãn bị lỗi*
+4. Loại bỏ các mẫu khả nghi nhất là nhãn bị lỗi
+5. Đặt trọng số cho các mẫu trong từng lớp $i\in M$ để học một mô hình mới.
+
+## Chỉ tiêu tự tin
+
+Gọi số lượng mẫu được quan sát có nhãn $\yo=i$ là
+$\vect{C}_{\yo=i} \defined |\X_{\yo=i}|.$
+
+Độ tự tin trung bình của mô hình $\model$ đối với lớp $i\in M$ là
+
+\begin{equation}
+  \thres_i = \frac{ \sum_{\x\in\X_{\yo=i}}\pc_\model(\yo=i; \vect{x})}{\vect{C}_{\yo=i}}.
+(\#eq:avgconfidence)
+\end{equation}
+
+Với mỗi lớp $i\in M$ ta chọn chỉ tiêu tự tin $\thres_i\in(0,1)$
+bằng độ tự tin trung bình \@ref(eq:avgconfidence).
+Đối với từng mẫu $\x$ và từng nhãn $i$, giá trị xác suất dự đoán
+$\pc_\model(\yo=i; \vect{x})$ đưa ra bởi mô hình $\model$,
+nếu không nhỏ hơn chỉ tiêu $\thres_i$ thì ta cho rằng nhãn $i$ có khả năng đúng với mẫu $\x$.
+Tập hợp nhãn khả dĩ đối với mẫu $\x$ là
+
+\newcommand{\Lmtx}{L_{\model,\thres}(\x)}
+\newcommand{\lmtx}{\hat{l}_{\model,\thres}(\x)}
+
+\begin{equation}
+\Lmtx \defined \left\{l\in M: \pc_\model(\yo=l;\x)\geq \thres_l\right\}
+(\#eq:eq2)
+\end{equation}
+
+Nếu $\Lmtx\neq\emptyset$ thì ta có thể chọn một nhãn:
+\begin{equation}
+\lmtx \defined
+\begin{cases}
+\mathop{\rm arg max} \limits_{l\in \Lmtx} \pc_\model(\yo=l;\x), & \text{nhãn có xác suất dự đoán lớn nhất}\\
+\mathop{\rm arg max} \limits_{l\in \Lmtx} \{\pc_\model(\yo=l;\x) - \thres_l\}, & \text{nhãn có xác suất trội nhất so với chỉ tiêu}
+\end{cases}
+(\#eq:lmtx)
+\end{equation}
+
+để làm nhãn "đáng tin nhất" cho mẫu $\x.$
+Ngược lại, nếu
+$\model$ dự đoán không có nhãn nào phù hợp với mẫu $\x$
+thì $\Lmtx\equiv\emptyset.$
+
+## Xếp hạng khả nghi
+
+Gọi $\Xt_{\yo=i,\yt=j}$ là tập (bất khả tri) các mẫu có nhãn quan sát là $i$ và nhãn thật là $j$, ta ước lượng nó bằng cách dùng các nhãn đáng tin nhất $\lmtx$ tại \@ref(eq:lmtx):
+
+\begin{equation}
+\Xc_{\yo=i,\yt=j} \defined
+\left\{\x\in\X_{\yo=i}:
+\hat{l}_{\model(\x),\thres} \equiv j
+\right\}
+(\#eq:eq3b)
+\end{equation}
+
+Đơn thuần (mà lại hiệu quả) nhất, ta nghi ngờ
+các mẫu $\left\{\x\in\Xc_{\yo=i,\yt=j}: i\neq j\right\}$
+nằm ngoài đường chéo của ma trận
+$\Xc_{\yo,\yt}$
+là có nhãn lỗi.
+Xếp hạng mức độ khả nghi của các mẫu đó
+dựa theo xác suất do mô hình $\model$ dự đoán:
+\begin{equation}
+\ec({\x}) \defined \max_{j\neq i}{\pc(\yo=j; \x)}
+-\pc(\yo=i; \x)\quad \forall \x\in\X_{\yo=i}
+(\#eq:errnoise)
+\end{equation}
+theo cách làm trong CleanLab của Curtis et al.’s (2021), và đảo dấu so với Wei et al.’s (2018).
+Ta cũng có thể bù trừ chỉ tiêu tự tin vào để tính độ khả nghi:
+\begin{equation}
+e_\thres(\x) \defined
+\max_{j\neq i}{(\pc(\yo=j; \x)-\thres_j)}
+-(\pc(\yo=i; \x) - \thres_i)
+\quad \forall \x\in\X_{\yo=i}.
+(\#eq:eq4)
+\end{equation}
+
+## Ước lượng ma trận nhiễu
+
+Ma trận đếm cặp nhãn $\C_{\yo,\yt}$ kích thước $m\times m$
+lưu số phần tử của các tập $\Xc_{\yo=i,\yt=j}$,
+
+\begin{equation}
+\C_{\yo=i,\yt=j} \defined  |\Xc_{\yo=i,\yt=j} |
+(\#eq:eq5)
+\end{equation}
+
+ví dụ $\C_{\yo=3,\yt=1} = 10$ có nghĩa là, đếm được
+10 mẫu được gán nhãn $3$ nhưng "thật ra" nên có nhãn $1.$
+
+Vì \@ref(eq:eq3b) ước lượng
+$\Xc_{\yo=i,\yt=j}\approx\Xt_{\yo=i,\yt=j}$ cho nên
+$\sum_{j\in M}\C_{\yo=i,\yt=j}
+\approx \vect{C}_{\yo=i}.$
+
+Hiệu chỉnh ma trận đếm cặp nhãn qua hai bước.
+Bước đầu, hiệu chỉnh từng dòng theo số mẫu của từng lớp đã quan sát $i\in M,$
+
+\begin{equation}
+\check{Q}_{\yo=i,\yt=j} = \frac{\C_{\yo=i,\yt=j}}{\sum_{j\in M}\C_{\yo=i,\yt=j}}
+{\vect{C}_{\yo=i}}.
+(\#eq:eq6a)
+\end{equation}
+
+Cuối cùng, ta chia đều toàn bộ để tổng ma trận trở thành $1.$
+
+\begin{equation}
+\Qc_{\yo=i,\yt=j}=\frac{\check{Q}_{\yo=i,\yt=j}}{\sum_{i\in M,j\in M}\check{Q}_{\yo=i,\yt=j}}.
+(\#eq:eq6b)
+\end{equation}
+
+Curtis et al.’s (2021) trình bày một số
+phương pháp dùng ma trận nhiễu \@ref(eq:eq6b)
+để chọn lọc và xếp hạng nhãn khả nghi có lỗi.
+
+# Cuối cùng
+
+## Triển vọng
+
+Một số hướng nghiên cứu tương lai
+
+- Tối ưu hóa giá trị chỉ tiêu tự tin
+- Xử lý với bài toán hồi quy
+- Tương tác qua lại giữa việc học mô hình và việc khử lỗi
+
+## Tham khảo
+
+- Curtis G. Northcutt and Lu Jiang and Isaac L. Chuang (2021). Confident Learning: Estimating Uncertainty in Dataset Labels. Journal of Artificial Intelligence Research (JAIR)
+- [An Introduction to Confident Learning: Finding and Learning with Label Errors in Datasets (curtisnorthcutt.com)](https://l7.curtisnorthcutt.com/confident-learning)
+- [cleanlab/cleanlab: The standard data-centric AI package for data quality and machine learning with messy, real-world data and labels. (github.com)](https://github.com/cleanlab/cleanlab)
+- [Are Label Errors Imperative? Is Confident Learning Useful? | by Suneeta Mall | May, 2022 | Towards Data Science (medium.com)](https://medium.com/towards-data-science/confident-learning-err-did-you-say-your-data-is-clean-ef2597903328)
+- Wei, C., Lee, J. D., Liu, Q., and Ma, T. (2018). On the margin theory of feedforward neural networks. Computing Research Repository (CoRR)

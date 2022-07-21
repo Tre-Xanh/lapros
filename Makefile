@@ -1,2 +1,7 @@
-all:
-	julia -e 'using Weave; weave("denoise.jmd")'
+all: bookdown
+
+bookdown:
+	Rscript -e "bookdown::render_book('index.Rmd', 'all')"
+
+pluto:
+	julia -e "using Pluto; Pluto.run()"
