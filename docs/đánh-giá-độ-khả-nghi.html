@@ -140,12 +140,12 @@ Tập hợp nhãn khả dĩ đối với mẫu <span class="math inline">\({\bol
 L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})≔\left\{l\in M: {p}_{{\boldsymbol{{\phi}}}}(\tilde{y}=l;{\boldsymbol{{x}}})\geq {\boldsymbol{{t}}}_l\right\}
 \tag{2}
 \end{equation}\]</span></p>
-<p>Nếu <span class="math inline">\(L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})\neq\emptyset\)</span> thì ta có thể chọn một nhãn:
+<p>Nếu <span class="math inline">\(L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})\neq\emptyset\)</span> thì ta chọn một nhãn có xác suất dự đoán lớn nhất:
 <span class="math display" id="eq:lmtx">\[\begin{equation}
 \hat{l}_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})≔
 \begin{cases}
-\mathop{\rm arg max} \limits_{l\in L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})} {p}_{{\boldsymbol{{\phi}}}}(\tilde{y}=l;{\boldsymbol{{x}}}), &amp; \text{nhãn có xác suất dự đoán lớn nhất}\\
-\mathop{\rm arg max} \limits_{l\in L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})} \{{p}_{{\boldsymbol{{\phi}}}}(\tilde{y}=l;{\boldsymbol{{x}}}) - {\boldsymbol{{t}}}_l\}, &amp; \text{nhãn có xác suất trội nhất so với chỉ tiêu}
+\mathop{\rm arg max} \limits_{l\in L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})} {p}_{{\boldsymbol{{\phi}}}}(\tilde{y}=l;{\boldsymbol{{x}}}), &amp; \text{không xét chỉ tiêu}\\
+\mathop{\rm arg max} \limits_{l\in L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})} \{{p}_{{\boldsymbol{{\phi}}}}(\tilde{y}=l;{\boldsymbol{{x}}}) - {\boldsymbol{{t}}}_l\}, &amp; \text{có bù trừ chỉ tiêu}
 \end{cases}
 \tag{3}
 \end{equation}\]</span></p>

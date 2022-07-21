@@ -127,12 +127,12 @@ Tập hợp nhãn khả dĩ đối với mẫu $\x$ là
 (\#eq:eq2)
 \end{equation}
 
-Nếu $\Lmtx\neq\emptyset$ thì ta có thể chọn một nhãn:
+Nếu $\Lmtx\neq\emptyset$ thì ta chọn một nhãn có xác suất dự đoán lớn nhất:
 \begin{equation}
 \lmtx \defined
 \begin{cases}
-\mathop{\rm arg max} \limits_{l\in \Lmtx} \pc_\model(\yo=l;\x), & \text{nhãn có xác suất dự đoán lớn nhất}\\
-\mathop{\rm arg max} \limits_{l\in \Lmtx} \{\pc_\model(\yo=l;\x) - \thres_l\}, & \text{nhãn có xác suất trội nhất so với chỉ tiêu}
+\mathop{\rm arg max} \limits_{l\in \Lmtx} \pc_\model(\yo=l;\x), & \text{không xét chỉ tiêu}\\
+\mathop{\rm arg max} \limits_{l\in \Lmtx} \{\pc_\model(\yo=l;\x) - \thres_l\}, & \text{có bù trừ chỉ tiêu}
 \end{cases}
 (\#eq:lmtx)
 \end{equation}
