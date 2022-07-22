@@ -4,9 +4,6 @@
 using Markdown
 using InteractiveUtils
 
-# ╔═╡ 29cd589c-b3e9-4a65-9641-352129a27c1e
-using PlutoUI; TableOfContents()
-
 # ╔═╡ 0911e262-5124-4aa9-b1ba-feacec87b49e
 begin
 	using Chain
@@ -15,8 +12,11 @@ begin
 	using StatsBase: sample
 end
 
+# ╔═╡ 29cd589c-b3e9-4a65-9641-352129a27c1e
+# using PlutoUI; TableOfContents()
+
 # ╔═╡ 34e904a0-5909-4cdd-a025-068dbb1a6cd1
-n = 10 # number of samples
+n = 8 # number of samples
 
 # ╔═╡ 9cb3568a-9b59-438e-9ca0-c10c93247d92
 md"""
@@ -31,7 +31,7 @@ như sau.
 """
 
 # ╔═╡ dc3a9ad9-6a90-437b-9893-d59788b8bafb
-m = 3
+m = 3 # number of classes
 
 # ╔═╡ d1dd37af-7def-4a27-add4-223bf76757e2
 M = collect(1:m)
@@ -66,6 +66,37 @@ md"""
 Độ tự tin trung bình của từng lớp là
 """
 
+# ╔═╡ 6c190eec-b8bc-4915-9d20-cac0280b4131
+md"""
+Mức độ vượt chỉ tiêu của từng xác suất dự đoán là 
+"""
+
+# ╔═╡ 73ef22d7-0961-46fa-93a8-c149c62f0ba8
+md""" ## Chọn nhãn khả tín
+"""
+
+# ╔═╡ 21b37653-4dc8-48c6-bc31-cd0449b24bc2
+md"""
+Ta có các tập nhãn khả tín như sau.
+"""
+
+# ╔═╡ 5be2ee06-178d-42ec-97b2-b51dbe189633
+md"""
+Danh sách nhãn đáng tin nhất đối với từng mẫu là như sau, trong đó $0$ đánh dấu trường hợp không có nhãn phù hợp.
+"""
+
+# ╔═╡ 451f8698-2c6c-4cf1-8e1a-ede8cc1c535b
+md"""
+Xếp các mẫu vào ma trận có hàng thể hiện nhãn đã quan sát $\tilde{y}$, còn cột thể hiện nhãn đáng tin nhất $\hat{l}.$
+"""
+
+# ╔═╡ 9c063c91-0497-40c2-8eb1-bdf8060aaf70
+md"""
+## Độ khả nghi
+
+Độ khả nghi của các mẫu dữ liệu là như sau.
+"""
+
 # ╔═╡ 8fadfa66-a730-4f99-aa70-e25fec26cb09
 begin
 	struct Lapros
@@ -93,7 +124,7 @@ begin
 	end
 	
 	lapros = avg_class_confidence(p̂, ỹ, M)
-end
+end;
 
 # ╔═╡ 95d29260-af27-48ca-a3a7-120575b318a4
 Xỹ = lapros.Xỹ
@@ -104,41 +135,15 @@ C = lapros.C
 # ╔═╡ 1dba3ac3-eb7c-442c-a474-cd7b415a4594
 t = lapros.t
 
-# ╔═╡ 73ef22d7-0961-46fa-93a8-c149c62f0ba8
-md""" ## Chọn nhãn khả tín
-"""
-
-# ╔═╡ 6c190eec-b8bc-4915-9d20-cac0280b4131
-md"""
-Mức độ vượt chỉ tiêu của từng xác suất dự đoán là 
-"""
-
 # ╔═╡ 71c14b17-6fda-4b0a-b30f-c3c181d35b12
 t2p = p̂ .- t'
 
-# ╔═╡ ce38845e-cafa-4190-81c4-80b7bde412cc
-md"""
-Ma trận True/False thể hiện việc xác suất dự đoán có đạt chỉ tiêu hay không:
-"""
-
 # ╔═╡ 2dbdc102-5f61-4888-9bae-96d8bbf333a5
-t2p_positive = p̂ .≥ t'
-
-# ╔═╡ 82974108-2917-41f8-a8b2-0fe323331b48
-@assert t2p_positive == (t2p .≥ 0)
-
-# ╔═╡ 21b37653-4dc8-48c6-bc31-cd0449b24bc2
-md"""
-Ta có các tập nhãn khả tín như sau.
-"""
+# Ma trận True/False thể hiện việc xác suất dự đoán có đạt chỉ tiêu hay không:
+t2p_positive = t2p .≥ 0;
 
 # ╔═╡ f8cbcd15-d2d0-4945-a80b-0e0e615d22e5
 Lᵩ = [M[t2p_positive[i, :]] for i in 1:n]
-
-# ╔═╡ 5be2ee06-178d-42ec-97b2-b51dbe189633
-md"""
-Danh sách nhãn mà mô hình $\model$ cho rằng đáng tin nhất đối với lần lượt các mẫu $1,\ldots,n$ là như sau, trong đó $0$ đánh dấu trường hợp không có nhãn nào khả tín:
-"""
 
 # ╔═╡ 591f5a84-b437-4b59-9961-bc110e34eeae
 l̂ = @chain argmax(t2p, dims=2) begin
@@ -146,11 +151,6 @@ l̂ = @chain argmax(t2p, dims=2) begin
 	[id[2] for id in _]
 	ifelse.(iszero.(sum(t2p_positive, dims=2))[:], 0, _)
 end
-
-# ╔═╡ 451f8698-2c6c-4cf1-8e1a-ede8cc1c535b
-md"""
-Trong ví dụ cụ thể của chúng ta, $\X_{\yo,\yt}$ là
-"""
 
 # ╔═╡ 2a49d3be-d6ae-43fd-8fe8-a14800c023c9
 Xỹẏ = begin
@@ -167,13 +167,6 @@ Xỹẏ = begin
 	end
 	partition_X(l̂, ỹ, M)
 end
-
-# ╔═╡ 9c063c91-0497-40c2-8eb1-bdf8060aaf70
-md"""
-## Độ khả nghi
-
-Độ khả nghi của các mẫu dữ liệu là như sau.
-"""
 
 # ╔═╡ b33c68aa-0a24-4622-8e4d-d9abbce885a5
 e = begin
@@ -199,20 +192,21 @@ e = begin
 	rank(p̂, l̂, ỹ, t)
 end
 
+# ╔═╡ 82974108-2917-41f8-a8b2-0fe323331b48
+@assert t2p_positive == (p̂ .≥ t')
+
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 Chain = "8be319e6-bccf-4806-a6f7-6fae938471bc"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
-PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
 [compat]
 Chain = "~0.5.0"
 DataFrames = "~1.3.4"
 DataStructures = "~0.18.13"
-PlutoUI = "~0.7.39"
 StatsBase = "~0.33.19"
 """
 
@@ -222,12 +216,6 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.7.3"
 manifest_format = "2.0"
-
-[[deps.AbstractPlutoDingetjes]]
-deps = ["Pkg"]
-git-tree-sha1 = "8eaf9f1b4921132a4cff3f36a1d9ba923b14a481"
-uuid = "6e696c72-6542-2067-7265-42206c756150"
-version = "1.1.4"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -254,12 +242,6 @@ deps = ["ChainRulesCore", "LinearAlgebra", "Test"]
 git-tree-sha1 = "38f7a08f19d8810338d4f5085211c7dfa5d5bdd8"
 uuid = "9e997f8a-9a97-42d5-a9f1-ce6bfc15e2c0"
 version = "0.1.4"
-
-[[deps.ColorTypes]]
-deps = ["FixedPointNumbers", "Random"]
-git-tree-sha1 = "eb7f0f8307f71fac7c606984ea5fb2817275d6e4"
-uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
-version = "0.11.4"
 
 [[deps.Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
@@ -323,12 +305,6 @@ uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
 
-[[deps.FixedPointNumbers]]
-deps = ["Statistics"]
-git-tree-sha1 = "335bfdceacc84c5cdf16aadc768aa5ddfc5383cc"
-uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
-version = "0.8.4"
-
 [[deps.Formatting]]
 deps = ["Printf"]
 git-tree-sha1 = "8339d61043228fdd3eb658d86c926cb282ae72a8"
@@ -338,24 +314,6 @@ version = "0.4.2"
 [[deps.Future]]
 deps = ["Random"]
 uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
-
-[[deps.Hyperscript]]
-deps = ["Test"]
-git-tree-sha1 = "8d511d5b81240fc8e6802386302675bdf47737b9"
-uuid = "47d2ed2b-36de-50cf-bf87-49c2cf4b8b91"
-version = "0.0.4"
-
-[[deps.HypertextLiteral]]
-deps = ["Tricks"]
-git-tree-sha1 = "c47c5fa4c5308f27ccaac35504858d8914e102f9"
-uuid = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
-version = "0.9.4"
-
-[[deps.IOCapture]]
-deps = ["Logging", "Random"]
-git-tree-sha1 = "f7be53659ab06ddc986428d3a9dcc95f6fa6705a"
-uuid = "b5f81e59-6552-4d32-b1f0-c071b021bf89"
-version = "0.2.2"
 
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
@@ -381,12 +339,6 @@ version = "0.1.1"
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
 uuid = "82899510-4779-5014-852e-03e436cf321d"
 version = "1.0.0"
-
-[[deps.JSON]]
-deps = ["Dates", "Mmap", "Parsers", "Unicode"]
-git-tree-sha1 = "3c837543ddb02250ef42f4738347454f95079d4e"
-uuid = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
-version = "0.21.3"
 
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -452,21 +404,9 @@ git-tree-sha1 = "85f8e6578bf1f9ee0d11e7bb1b1456435479d47c"
 uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 version = "1.4.1"
 
-[[deps.Parsers]]
-deps = ["Dates"]
-git-tree-sha1 = "0044b23da09b5608b4ecacb4e5e6c6332f833a7e"
-uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.3.2"
-
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-
-[[deps.PlutoUI]]
-deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "Markdown", "Random", "Reexport", "UUIDs"]
-git-tree-sha1 = "8d1f54886b9037091edf146b517989fc4a09efec"
-uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-version = "0.7.39"
 
 [[deps.PooledArrays]]
 deps = ["DataAPI", "Future"]
@@ -560,11 +500,6 @@ uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
-[[deps.Tricks]]
-git-tree-sha1 = "6bac775f2d42a611cdfcd1fb217ee719630c4175"
-uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
-version = "0.1.6"
-
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
 uuid = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
@@ -590,7 +525,6 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 """
 
 # ╔═╡ Cell order:
-# ╟─29cd589c-b3e9-4a65-9641-352129a27c1e
 # ╟─9cb3568a-9b59-438e-9ca0-c10c93247d92
 # ╟─34e904a0-5909-4cdd-a025-068dbb1a6cd1
 # ╟─dc3a9ad9-6a90-437b-9893-d59788b8bafb
@@ -603,21 +537,21 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╟─846072fc-2269-4fbe-89d4-270b71cf5339
 # ╟─68fef702-a604-4f03-87da-09984af59898
 # ╟─1dba3ac3-eb7c-442c-a474-cd7b415a4594
-# ╟─8fadfa66-a730-4f99-aa70-e25fec26cb09
-# ╟─73ef22d7-0961-46fa-93a8-c149c62f0ba8
 # ╟─6c190eec-b8bc-4915-9d20-cac0280b4131
-# ╠═71c14b17-6fda-4b0a-b30f-c3c181d35b12
-# ╟─ce38845e-cafa-4190-81c4-80b7bde412cc
-# ╠═2dbdc102-5f61-4888-9bae-96d8bbf333a5
-# ╟─82974108-2917-41f8-a8b2-0fe323331b48
+# ╟─71c14b17-6fda-4b0a-b30f-c3c181d35b12
+# ╟─73ef22d7-0961-46fa-93a8-c149c62f0ba8
 # ╟─21b37653-4dc8-48c6-bc31-cd0449b24bc2
 # ╟─f8cbcd15-d2d0-4945-a80b-0e0e615d22e5
 # ╟─5be2ee06-178d-42ec-97b2-b51dbe189633
-# ╠═591f5a84-b437-4b59-9961-bc110e34eeae
+# ╟─591f5a84-b437-4b59-9961-bc110e34eeae
 # ╟─451f8698-2c6c-4cf1-8e1a-ede8cc1c535b
 # ╟─2a49d3be-d6ae-43fd-8fe8-a14800c023c9
 # ╟─9c063c91-0497-40c2-8eb1-bdf8060aaf70
 # ╟─b33c68aa-0a24-4622-8e4d-d9abbce885a5
+# ╟─8fadfa66-a730-4f99-aa70-e25fec26cb09
+# ╟─2dbdc102-5f61-4888-9bae-96d8bbf333a5
+# ╟─82974108-2917-41f8-a8b2-0fe323331b48
 # ╟─0911e262-5124-4aa9-b1ba-feacec87b49e
+# ╟─29cd589c-b3e9-4a65-9641-352129a27c1e
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
