@@ -67,6 +67,10 @@ $$\pt(\yo| \yt; \vect{x}) \equiv \pt(\yo| \yt) \forall\vect{x}.$$
 
 Ví dụ khi phân loại 3 loài vật là chó, mèo và chuột, thì xác suất nhầm chó với mèo cao hơn là nhầm mèo với chuột hoặc chó với chuột, và xác suất đó không phụ thuộc vào từng con thú cụ thể. Giả sử này là hợp lý và thường được sử dụng trong các nghiên cứu về xử lý nhiễu (Goldberger and Ben-Reuven, 2017; Sukhbaatar et al., 2015).
 
+## Ví dụ cụ thể
+
+Xem ví dụ với [dữ liệu cụ thể ](lapros.pdf) tại [đây](lapros.pdf).
+
 ## Ma trận nhiễu theo lớp
 
 $$\Qt_{\yo, \yt} \defined \left[ {\begin{array}{ccc}
