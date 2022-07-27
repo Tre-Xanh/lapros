@@ -23,7 +23,9 @@ output:
 \newcommand{\C}{{\vect{C}}}
 \newcommand{\Ccheck}{\check{\vect{C}}}
 \newcommand{\pt}{\dot{p}}
-\newcommand{\pc}{{p}}
+\newcommand{\pc}{p}
+\newcommand{\pyix}[2]{\pc_{\yo={#1}}({#2})}
+\newcommand{\pyx}[1]{\pyix{i}{#1}}
 \newcommand{\ec}{{e}}
 \newcommand{\Qt}{\dot{\vect{Q}}}
 \newcommand{\Qc}{\vect{Q}}
@@ -69,7 +71,7 @@ Ví dụ khi phân loại 3 loài vật là chó, mèo và chuột, thì xác su
 
 ## Ví dụ cụ thể
 
-Xem ví dụ với [dữ liệu cụ thể ](lapros.pdf) tại [đây](lapros.pdf).
+Xem ví dụ với [dữ liệu cụ thể tại đây](lapros.jl.html).
 
 ## Ma trận nhiễu theo lớp
 
@@ -94,7 +96,17 @@ là xác suất mô hình $\model$ đưa ra đối với mẫu $\vect{x}$, dự 
 **Đầu vào**
 
 1. Các nhãn $\yo_k$ đã quan sát được đối với các mẫu $\x_k\in\X$
-2. Xác suất $\pc(\yo=i; \vect{x}_k\in\vect{X})$ mà mô hình $\model$ dự đoán mẫu $\x_k\in\X$ có nhãn $i\in M$
+2. Xác suất $\pyx{\x_k}$ mà mô hình $\model$ dự đoán mẫu $\x_k\in\X$ có nhãn $i\in M$
+
+Mặc nhiên
+
+\begin{equation}
+\begin{cases}
+\pyx{\x} \geq 0 & \quad\forall i\in M, \forall\x\in\X \\
+\sum\limits_{i\in M}{\pyx{\x}} \equiv 1 & \quad\forall \x\in\X
+\end{cases}
+(\#eq:probasum1)
+\end{equation}
 
 **Các bước**
 
@@ -112,14 +124,19 @@ $\vect{C}_{\yo=i} \defined |\X_{\yo=i}|.$
 Độ tự tin trung bình của mô hình $\model$ đối với lớp $i\in M$ là
 
 \begin{equation}
-  \thres_i = \frac{ \sum_{\x\in\X_{\yo=i}}\pc_\model(\yo=i; \vect{x})}{\vect{C}_{\yo=i}}.
+  \thres_i = \frac{1}{\vect{C}_{\yo=i}}
+  {\sum\limits_{\x\in\X_{\yo=i}}\pyx{\x}}.
 (\#eq:avgconfidence)
 \end{equation}
+
+Vì phép tính trung bình được thực hiện trên từng tập
+$\X_{\yo=i}$
+nên có thể $\sum\limits_{i\in M}{\thres_i} \neq 1.$
 
 Với mỗi lớp $i\in M$ ta chọn chỉ tiêu tự tin $\thres_i\in(0,1)$
 bằng độ tự tin trung bình \@ref(eq:avgconfidence).
 Đối với từng mẫu $\x$ và từng nhãn $i$, giá trị xác suất dự đoán
-$\pc_\model(\yo=i; \vect{x})$ đưa ra bởi mô hình $\model$,
+$\pyx{\x}$ đưa ra bởi mô hình $\model$,
 nếu không nhỏ hơn chỉ tiêu $\thres_i$ thì ta cho rằng nhãn $i$ có khả năng đúng với mẫu $\x$.
 Tập hợp nhãn khả dĩ đối với mẫu $\x$ là
 
@@ -127,24 +144,25 @@ Tập hợp nhãn khả dĩ đối với mẫu $\x$ là
 \newcommand{\lmtx}{\hat{l}_{\model,\thres}(\x)}
 
 \begin{equation}
-\Lmtx \defined \left\{l\in M: \pc_\model(\yo=l;\x)\geq \thres_l\right\}
+\Lmtx \defined \left\{i\in M: \pyx{\x}\geq \thres_i\right\}
 (\#eq:eq2)
 \end{equation}
 
-Nếu $\Lmtx\neq\emptyset$ thì ta chọn một nhãn có xác suất dự đoán lớn nhất:
+Với giả định xác suất \@ref(eq:probasum1)
+và chỉ tiêu tự tin \@ref(eq:avgconfidence),
+ta kỳ vọng $\Lmtx\neq\emptyset.$
+Từ đó chọn một nhãn có xác suất dự đoán lớn nhất:
 \begin{equation}
 \lmtx \defined
 \begin{cases}
-\mathop{\rm arg max} \limits_{l\in \Lmtx} \pc_\model(\yo=l;\x), & \text{không xét chỉ tiêu}\\
-\mathop{\rm arg max} \limits_{l\in \Lmtx} \{\pc_\model(\yo=l;\x) - \thres_l\}, & \text{có bù trừ chỉ tiêu}
+\mathop{\rm arg max} \limits_{i\in \Lmtx} \pyx{\x}, & \text{không xét chỉ tiêu}\\
+\mathop{\rm arg max} \limits_{i\in \Lmtx} \{\pyx{\x} - \thres_i\}, & \text{có bù trừ chỉ tiêu}
 \end{cases}
 (\#eq:lmtx)
 \end{equation}
 
 để làm nhãn "đáng tin nhất" cho mẫu $\x.$
-Ngược lại, nếu
-$\model$ dự đoán không có nhãn nào phù hợp với mẫu $\x$
-thì $\Lmtx\equiv\emptyset.$
+
 
 ## Xếp hạng khả nghi
 
@@ -166,16 +184,16 @@ là có nhãn lỗi.
 Xếp hạng mức độ khả nghi của các mẫu đó
 dựa theo xác suất do mô hình $\model$ dự đoán:
 \begin{equation}
-\ec({\x}) \defined \max_{j\neq i}{\pc(\yo=j; \x)}
--\pc(\yo=i; \x)\quad \forall \x\in\X_{\yo=i}
+\ec({\x}) \defined \max_{j\neq i}{\pyix{j}{\x}}
+-\pyx{\x}\quad \forall \x\in\X_{\yo=i}
 (\#eq:errnoise)
 \end{equation}
 theo cách làm trong CleanLab của Curtis et al.’s (2021), và đảo dấu so với Wei et al.’s (2018).
 Ta cũng có thể bù trừ chỉ tiêu tự tin vào để tính độ khả nghi:
 \begin{equation}
 e_\thres(\x) \defined
-\max_{j\neq i}{(\pc(\yo=j; \x)-\thres_j)}
--(\pc(\yo=i; \x) - \thres_i)
+\max_{j\neq i}{\{\pyix{j}{\x}-\thres_j\}}
+-\{\pyx{\x} - \thres_i\}
 \quad \forall \x\in\X_{\yo=i}.
 (\#eq:eq4)
 \end{equation}
@@ -195,14 +213,14 @@ ví dụ $\C_{\yo=3,\yt=1} = 10$ có nghĩa là, đếm được
 
 Vì \@ref(eq:eq3b) ước lượng
 $\Xc_{\yo=i,\yt=j}\approx\Xt_{\yo=i,\yt=j}$ cho nên
-$\sum_{j\in M}\C_{\yo=i,\yt=j}
+$\sum\limits_{j\in M}\C_{\yo=i,\yt=j}
 \approx \vect{C}_{\yo=i}.$
 
 Hiệu chỉnh ma trận đếm cặp nhãn qua hai bước.
 Bước đầu, hiệu chỉnh từng dòng theo số mẫu của từng lớp đã quan sát $i\in M,$
 
 \begin{equation}
-\check{Q}_{\yo=i,\yt=j} = \frac{\C_{\yo=i,\yt=j}}{\sum_{j\in M}\C_{\yo=i,\yt=j}}
+\check{Q}_{\yo=i,\yt=j} = \frac{\C_{\yo=i,\yt=j}}{\sum\limits_{j\in M}\C_{\yo=i,\yt=j}}
 {\vect{C}_{\yo=i}}.
 (\#eq:eq6a)
 \end{equation}
@@ -210,7 +228,7 @@ Bước đầu, hiệu chỉnh từng dòng theo số mẫu của từng lớp �
 Cuối cùng, ta chia đều toàn bộ để tổng ma trận trở thành $1.$
 
 \begin{equation}
-\Qc_{\yo=i,\yt=j}=\frac{\check{Q}_{\yo=i,\yt=j}}{\sum_{i\in M,j\in M}\check{Q}_{\yo=i,\yt=j}}.
+\Qc_{\yo=i,\yt=j}=\frac{\check{Q}_{\yo=i,\yt=j}}{\sum\limits_{i,j\in M}\check{Q}_{\yo=i,\yt=j}}.
 (\#eq:eq6b)
 \end{equation}
 
