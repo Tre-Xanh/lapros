@@ -111,8 +111,16 @@
 <p><strong>Đầu vào</strong></p>
 <ol style="list-style-type: decimal">
 <li>Các nhãn <span class="math inline">\(\tilde{y}_k\)</span> đã quan sát được đối với các mẫu <span class="math inline">\({\boldsymbol{{x}}}_k\in{\boldsymbol{{X}}}\)</span></li>
-<li>Xác suất <span class="math inline">\({p}(\tilde{y}=i; {\boldsymbol{{x}}}_k\in{\boldsymbol{{X}}})\)</span> mà mô hình <span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span> dự đoán mẫu <span class="math inline">\({\boldsymbol{{x}}}_k\in{\boldsymbol{{X}}}\)</span> có nhãn <span class="math inline">\(i\in M\)</span></li>
+<li>Xác suất <span class="math inline">\(p_{\tilde{y}={i}}({{\boldsymbol{{x}}}_k})\)</span> mà mô hình <span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span> dự đoán mẫu <span class="math inline">\({\boldsymbol{{x}}}_k\in{\boldsymbol{{X}}}\)</span> có nhãn <span class="math inline">\(i\in M\)</span></li>
 </ol>
+<p>Mặc nhiên</p>
+<p><span class="math display" id="eq:probasum1">\[\begin{equation}
+\begin{cases}
+p_{\tilde{y}={i}}({{\boldsymbol{{x}}}}) \geq 0 &amp; \quad\forall i\in M, \forall{\boldsymbol{{x}}}\in{\boldsymbol{{X}}}\\
+\sum\limits_{i\in M}{p_{\tilde{y}={i}}({{\boldsymbol{{x}}}})} \equiv 1 &amp; \quad\forall {\boldsymbol{{x}}}\in{\boldsymbol{{X}}}
+\end{cases}
+\tag{1}
+\end{equation}\]</span></p>
 <p><strong>Các bước</strong></p>
 <ol style="list-style-type: decimal">
 <li>Tính <span class="math inline">\(t_i\)</span>, độ tự tin trung bình theo <span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span> trong từng lớp <span class="math inline">\(i\in M\)</span></li>
@@ -128,42 +136,55 @@
 <span class="math inline">\({\boldsymbol{{C}}}_{\tilde{y}=i} ≔|{\boldsymbol{{X}}}_{\tilde{y}=i}|.\)</span></p>
 <p>Độ tự tin trung bình của mô hình <span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span> đối với lớp <span class="math inline">\(i\in M\)</span> là</p>
 <p><span class="math display" id="eq:avgconfidence">\[\begin{equation}
-  {\boldsymbol{{t}}}_i = \frac{ \sum_{{\boldsymbol{{x}}}\in{\boldsymbol{{X}}}_{\tilde{y}=i}}{p}_{{\boldsymbol{{\phi}}}}(\tilde{y}=i; {\boldsymbol{{x}}})}{{\boldsymbol{{C}}}_{\tilde{y}=i}}.
-\tag{1}
+  {\boldsymbol{{t}}}_i = \frac{1}{{\boldsymbol{{C}}}_{\tilde{y}=i}}
+  {\sum\limits_{{\boldsymbol{{x}}}\in{\boldsymbol{{X}}}_{\tilde{y}=i}}p_{\tilde{y}={i}}({{\boldsymbol{{x}}}})}.
+\tag{2}
 \end{equation}\]</span></p>
+<p>Vì phép tính trung bình được thực hiện trên từng tập
+<span class="math inline">\({\boldsymbol{{X}}}_{\tilde{y}=i}\)</span>
+nên có thể <span class="math inline">\(\sum\limits_{i\in M}{{\boldsymbol{{t}}}_i} \neq 1.\)</span>
+Ta đề xuất lấy trung bình trên toàn bộ tập <span class="math inline">\({\boldsymbol{{X}}}\)</span>
+nếu <span class="math inline">\({\boldsymbol{{X}}}_{\tilde{y}=i}\equiv\emptyset.\)</span></p>
 <p>Với mỗi lớp <span class="math inline">\(i\in M\)</span> ta chọn chỉ tiêu tự tin <span class="math inline">\({\boldsymbol{{t}}}_i\in(0,1)\)</span>
-bằng độ tự tin trung bình <a href="đánh-giá-độ-khả-nghi.html#eq:avgconfidence">(1)</a>.
+bằng độ tự tin trung bình <a href="đánh-giá-độ-khả-nghi.html#eq:avgconfidence">(2)</a>.
 Đối với từng mẫu <span class="math inline">\({\boldsymbol{{x}}}\)</span> và từng nhãn <span class="math inline">\(i\)</span>, giá trị xác suất dự đoán
-<span class="math inline">\({p}_{{\boldsymbol{{\phi}}}}(\tilde{y}=i; {\boldsymbol{{x}}})\)</span> đưa ra bởi mô hình <span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span>,
+<span class="math inline">\(p_{\tilde{y}={i}}({{\boldsymbol{{x}}}})\)</span> đưa ra bởi mô hình <span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span>,
 nếu không nhỏ hơn chỉ tiêu <span class="math inline">\({\boldsymbol{{t}}}_i\)</span> thì ta cho rằng nhãn <span class="math inline">\(i\)</span> có khả năng đúng với mẫu <span class="math inline">\({\boldsymbol{{x}}}\)</span>.
 Tập hợp nhãn khả dĩ đối với mẫu <span class="math inline">\({\boldsymbol{{x}}}\)</span> là</p>
 <p><span class="math display" id="eq:eq2">\[\begin{equation}
-L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})≔\left\{l\in M: {p}_{{\boldsymbol{{\phi}}}}(\tilde{y}=l;{\boldsymbol{{x}}})\geq {\boldsymbol{{t}}}_l\right\}
-\tag{2}
-\end{equation}\]</span></p>
-<p>Nếu <span class="math inline">\(L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})\neq\emptyset\)</span> thì ta chọn một nhãn có xác suất dự đoán lớn nhất:
-<span class="math display" id="eq:lmtx">\[\begin{equation}
-\hat{l}_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})≔
-\begin{cases}
-\mathop{\rm arg max} \limits_{l\in L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})} {p}_{{\boldsymbol{{\phi}}}}(\tilde{y}=l;{\boldsymbol{{x}}}), &amp; \text{không xét chỉ tiêu}\\
-\mathop{\rm arg max} \limits_{l\in L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})} \{{p}_{{\boldsymbol{{\phi}}}}(\tilde{y}=l;{\boldsymbol{{x}}}) - {\boldsymbol{{t}}}_l\}, &amp; \text{có bù trừ chỉ tiêu}
-\end{cases}
+L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})≔\left\{i\in M: p_{\tilde{y}={i}}({{\boldsymbol{{x}}}})\geq {\boldsymbol{{t}}}_i\right\}
 \tag{3}
 \end{equation}\]</span></p>
-<p>để làm nhãn “đáng tin nhất” cho mẫu <span class="math inline">\({\boldsymbol{{x}}}.\)</span>
-Ngược lại, nếu
-<span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span> dự đoán không có nhãn nào phù hợp với mẫu <span class="math inline">\({\boldsymbol{{x}}}\)</span>
-thì <span class="math inline">\(L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})\equiv\emptyset.\)</span></p>
+<p>Với giả định xác suất <a href="đánh-giá-độ-khả-nghi.html#eq:probasum1">(1)</a>
+và chỉ tiêu tự tin <a href="đánh-giá-độ-khả-nghi.html#eq:avgconfidence">(2)</a>,
+với kỳ vọng <span class="math inline">\(L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})\neq\emptyset,\)</span>
+CleanLab (Curtis et al.’s 2021)
+chọn một nhãn có xác suất dự đoán lớn nhất:
+<span class="math display" id="eq:lmtxcleanlab">\[\begin{equation}
+\hat{l}_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})≔
+\mathop{\rm arg max}\limits_{i\in L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})}p_{\tilde{y}={i}}({{\boldsymbol{{x}}}})
+\tag{4}
+\end{equation}\]</span></p>
+<p>để làm nhãn “đáng tin nhất” cho mẫu <span class="math inline">\({\boldsymbol{{x}}}.\)</span></p>
+<p>Ta đề xuất
+bù trừ chỉ tiêu vào công thức trên để cân đối với độ tự tin của mô hình,
+đồng thời
+nới lỏng ràng buộc <span class="math inline">\(i\in L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})\)</span> để tránh trường hợp không chọn được nhãn đáng tin,
+<span class="math display" id="eq:lmtx">\[\begin{equation}
+\hat{l}_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})≔
+\mathop{\rm arg max}\limits_{i\in M}\{p_{\tilde{y}={i}}({{\boldsymbol{{x}}}}) - {\boldsymbol{{t}}}_i\}.
+\tag{5}
+\end{equation}\]</span></p>
 </div>
 <div id="xếp-hạng-khả-nghi" class="section level2 hasAnchor">
 <h2>Xếp hạng khả nghi<a href="đánh-giá-độ-khả-nghi.html#xếp-hạng-khả-nghi" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Gọi <span class="math inline">\(\dot{{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j}\)</span> là tập (bất khả tri) các mẫu có nhãn quan sát là <span class="math inline">\(i\)</span> và nhãn thật là <span class="math inline">\(j\)</span>, ta ước lượng nó bằng cách dùng các nhãn đáng tin nhất <span class="math inline">\(\hat{l}_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})\)</span> tại <a href="đánh-giá-độ-khả-nghi.html#eq:lmtx">(3)</a>:</p>
+<p>Gọi <span class="math inline">\(\dot{{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j}\)</span> là tập (bất khả tri) các mẫu có nhãn quan sát là <span class="math inline">\(i\)</span> và nhãn thật là <span class="math inline">\(j\)</span>, ta ước lượng nó bằng cách dùng các nhãn đáng tin nhất <span class="math inline">\(\hat{l}_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})\)</span> tại <a href="đánh-giá-độ-khả-nghi.html#eq:lmtx">(5)</a>:</p>
 <p><span class="math display" id="eq:eq3b">\[\begin{equation}
 {{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j} ≔
 \left\{{\boldsymbol{{x}}}\in{\boldsymbol{{X}}}_{\tilde{y}=i}:
 \hat{l}_{{{\boldsymbol{{\phi}}}}({\boldsymbol{{x}}}),{\boldsymbol{{t}}}} \equiv j
 \right\}
-\tag{4}
+\tag{6}
 \end{equation}\]</span></p>
 <p>Đơn thuần (mà lại hiệu quả) nhất, ta nghi ngờ
 các mẫu <span class="math inline">\(\left\{{\boldsymbol{{x}}}\in{{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j}: i\neq j\right\}\)</span>
@@ -173,19 +194,21 @@ là có nhãn lỗi.
 Xếp hạng mức độ khả nghi của các mẫu đó
 dựa theo xác suất do mô hình <span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span> dự đoán:
 <span class="math display" id="eq:errnoise">\[\begin{equation}
-{e}({{\boldsymbol{{x}}}}) ≔\max_{j\neq i}{{p}(\tilde{y}=j; {\boldsymbol{{x}}})}
--{p}(\tilde{y}=i; {\boldsymbol{{x}}})\quad \forall {\boldsymbol{{x}}}\in{\boldsymbol{{X}}}_{\tilde{y}=i}
-\tag{5}
+{e}({{\boldsymbol{{x}}}}) ≔\max_{j\neq i}{p_{\tilde{y}={j}}({{\boldsymbol{{x}}}})}
+-p_{\tilde{y}={i}}({{\boldsymbol{{x}}}})\quad \forall {\boldsymbol{{x}}}\in{\boldsymbol{{X}}}_{\tilde{y}=i}
+\tag{7}
 \end{equation}\]</span>
-theo cách làm trong CleanLab của Curtis et al.’s (2021), và đảo dấu so với Wei et al.’s (2018).
-Ta cũng có thể bù trừ chỉ tiêu tự tin vào để tính độ khả nghi:
+theo cách làm trong CleanLab của Curtis et al.’s (2021), và đảo dấu so với Wei et al.’s (2018).</p>
+<p>Chúng tôi đề xuất bù trừ chỉ tiêu tự tin vào để tính độ khả nghi:
 <span class="math display" id="eq:eq4">\[\begin{equation}
 e_{\boldsymbol{{t}}}({\boldsymbol{{x}}}) ≔
-\max_{j\neq i}{({p}(\tilde{y}=j; {\boldsymbol{{x}}})-{\boldsymbol{{t}}}_j)}
--({p}(\tilde{y}=i; {\boldsymbol{{x}}}) - {\boldsymbol{{t}}}_i)
-\quad \forall {\boldsymbol{{x}}}\in{\boldsymbol{{X}}}_{\tilde{y}=i}.
-\tag{6}
-\end{equation}\]</span></p>
+\max_{j\neq i}{\{p_{\tilde{y}={j}}({{\boldsymbol{{x}}}})-{\boldsymbol{{t}}}_j\}}
+-\{p_{\tilde{y}={i}}({{\boldsymbol{{x}}}}) - {\boldsymbol{{t}}}_i\}
+\quad \forall {\boldsymbol{{x}}}\in{\boldsymbol{{X}}}_{\tilde{y}=i};
+\tag{8}
+\end{equation}\]</span>
+bảo đảm
+<span class="math inline">\(e_{\boldsymbol{{t}}}({\boldsymbol{{x}}})\in[0,1].\)</span></p>
 </div>
 <div id="ước-lượng-ma-trận-nhiễu" class="section level2 hasAnchor">
 <h2>Ước lượng ma trận nhiễu<a href="đánh-giá-độ-khả-nghi.html#ước-lượng-ma-trận-nhiễu" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -193,27 +216,27 @@ e_{\boldsymbol{{t}}}({\boldsymbol{{x}}}) ≔
 lưu số phần tử của các tập <span class="math inline">\({{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j}\)</span>,</p>
 <p><span class="math display" id="eq:eq5">\[\begin{equation}
 {{\boldsymbol{{C}}}}_{\tilde{y}=i,\dot{y}=j} ≔|{{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j} |
-\tag{7}
+\tag{9}
 \end{equation}\]</span></p>
 <p>ví dụ <span class="math inline">\({{\boldsymbol{{C}}}}_{\tilde{y}=3,\dot{y}=1} = 10\)</span> có nghĩa là, đếm được
 10 mẫu được gán nhãn <span class="math inline">\(3\)</span> nhưng “thật ra” nên có nhãn <span class="math inline">\(1.\)</span></p>
-<p>Vì <a href="đánh-giá-độ-khả-nghi.html#eq:eq3b">(4)</a> ước lượng
+<p>Vì <a href="đánh-giá-độ-khả-nghi.html#eq:eq3b">(6)</a> ước lượng
 <span class="math inline">\({{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j}\approx\dot{{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j}\)</span> cho nên
-<span class="math inline">\(\sum_{j\in M}{{\boldsymbol{{C}}}}_{\tilde{y}=i,\dot{y}=j} \approx {\boldsymbol{{C}}}_{\tilde{y}=i}.\)</span></p>
+<span class="math inline">\(\sum\limits_{j\in M}{{\boldsymbol{{C}}}}_{\tilde{y}=i,\dot{y}=j} \approx {\boldsymbol{{C}}}_{\tilde{y}=i}.\)</span></p>
 <p>Hiệu chỉnh ma trận đếm cặp nhãn qua hai bước.
 Bước đầu, hiệu chỉnh từng dòng theo số mẫu của từng lớp đã quan sát <span class="math inline">\(i\in M,\)</span></p>
 <p><span class="math display" id="eq:eq6a">\[\begin{equation}
-\check{Q}_{\tilde{y}=i,\dot{y}=j} = \frac{{{\boldsymbol{{C}}}}_{\tilde{y}=i,\dot{y}=j}}{\sum_{j\in M}{{\boldsymbol{{C}}}}_{\tilde{y}=i,\dot{y}=j}}
+\check{Q}_{\tilde{y}=i,\dot{y}=j} = \frac{{{\boldsymbol{{C}}}}_{\tilde{y}=i,\dot{y}=j}}{\sum\limits_{j\in M}{{\boldsymbol{{C}}}}_{\tilde{y}=i,\dot{y}=j}}
 {{\boldsymbol{{C}}}_{\tilde{y}=i}}.
-\tag{8}
+\tag{10}
 \end{equation}\]</span></p>
 <p>Cuối cùng, ta chia đều toàn bộ để tổng ma trận trở thành <span class="math inline">\(1.\)</span></p>
 <p><span class="math display" id="eq:eq6b">\[\begin{equation}
-{\boldsymbol{{Q}}}_{\tilde{y}=i,\dot{y}=j}=\frac{\check{Q}_{\tilde{y}=i,\dot{y}=j}}{\sum_{i\in M,j\in M}\check{Q}_{\tilde{y}=i,\dot{y}=j}}.
-\tag{9}
+{\boldsymbol{{Q}}}_{\tilde{y}=i,\dot{y}=j}=\frac{\check{Q}_{\tilde{y}=i,\dot{y}=j}}{\sum\limits_{i,j\in M}\check{Q}_{\tilde{y}=i,\dot{y}=j}}.
+\tag{11}
 \end{equation}\]</span></p>
 <p>Curtis et al.’s (2021) trình bày một số
-phương pháp dùng ma trận nhiễu <a href="đánh-giá-độ-khả-nghi.html#eq:eq6b">(9)</a>
+phương pháp dùng ma trận nhiễu <a href="đánh-giá-độ-khả-nghi.html#eq:eq6b">(11)</a>
 để chọn lọc và xếp hạng nhãn khả nghi có lỗi.</p>
 </div>
 </div>
