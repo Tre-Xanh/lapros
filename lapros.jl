@@ -9,6 +9,7 @@ begin
 	using Chain
 	using DataFrames
 	using DataStructures
+	using Formatting: format	
 	import Random
 	using SparseArrays: spzeros
 	using StatsBase: sample
@@ -18,29 +19,25 @@ begin
 end;
 
 # ╔═╡ 34e904a0-5909-4cdd-a025-068dbb1a6cd1
-n = 10^7 # number of samples
+n = 10*10^6 # number of samples
+
+# ╔═╡ dc3a9ad9-6a90-437b-9893-d59788b8bafb
+m = 3 # number of classes
 
 # ╔═╡ 9cb3568a-9b59-438e-9ca0-c10c93247d92
 md"""
 
 ## Dữ liệu mẫu
 
-Lấy ví dụ cụ thể 
-đối với $n mẫu dữ liệu
-ta có các phân lớp,
-nhãn quan sát và xác suất dự đoán 
-như sau. 
+Lấy ví dụ cụ thể
+đối với $(format(n, commas = true)) mẫu dữ liệu
+trong $(m) phân lớp,
+đã được gán nhãn quan sát và có xác suất dự đoán từ một mô hình nào đó.
 Đặt mục tiêu viết thuật toán tìm nhãn lỗi chạy trong vòng 1 giây.
 """
 
-# ╔═╡ dc3a9ad9-6a90-437b-9893-d59788b8bafb
-m = 3 # number of classes
-
-# ╔═╡ d1dd37af-7def-4a27-add4-223bf76757e2
-M = collect(1:m)
-
 # ╔═╡ 8c9ff1af-26ef-42b4-8e1b-39d978b08674
-ỹ = sample(M, n)
+ỹ = sample(1:m, n)
 
 # ╔═╡ 99e5c1b4-89a0-4e70-972e-37dd22d57d37
 p̂ = @chain rand(Float64, (n, m)) begin
@@ -61,19 +58,8 @@ Xếp hạng độ khả nghi của các nhãn là như sau.
 
 # ╔═╡ 1dbe808e-85e0-4052-b6ac-90fa86300ba7
 md"""
-Nếu không chỉ đỉnh `classes` thì dùng mặc định là các giá trị unique của `observed`. 
+Nếu không chỉ đỉnh `classes` thì dùng mặc định là các giá trị unique của `observed`.
 """
-
-# ╔═╡ a6a56ac9-6849-49f9-bbce-4222cf663c80
-function lapros(
-	p::Array{Float64,2}, 
-	y::Array{Int64,1}, 
-)
-	M::Array{Int64,1} = unique(y)
-	M = sort(M)
-	# @show M
-	lapros(p, y, M)
-end
 
 # ╔═╡ faa8ebef-ff1a-486d-926f-3ab1a782eaf1
 md"""
@@ -84,7 +70,7 @@ Tập hợp mẫu quan sát được cho từng lớp là
 """
 
 # ╔═╡ 95d29260-af27-48ca-a3a7-120575b318a4
-Xỹ = [(1:n)[ỹ .== i] for i ∈ M]
+Xỹ = [(1:n)[ỹ .== i] for i ∈ 1:m]
 
 # ╔═╡ 0327985e-859f-4c0e-a232-856aa31b0c44
 md"""
@@ -92,7 +78,7 @@ Ta đếm được số lượng mẫu quan sát được cho từng lớp là
 """
 
 # ╔═╡ 846072fc-2269-4fbe-89d4-270b71cf5339
-C = [sum(ỹ .== i) for i ∈ M]
+C = [sum(ỹ .== i) for i ∈ 1:m]
 
 # ╔═╡ 68fef702-a604-4f03-87da-09984af59898
 md"""
@@ -102,10 +88,42 @@ md"""
 Độ tự tin trung bình của từng lớp là
 """
 
+# ╔═╡ 8fadfa66-a730-4f99-aa70-e25fec26cb09
+" Compute the average model confidence for samples in each class.
+If there is no sample in some specific class,
+we take the avarage over all samples.
+"
+function avg_confidence(
+	ps::Array{Float64,2},
+	ys::Array{Int64,1},
+)
+	m = size(ps, 2)
+	t = zeros(Float64, m)
+	for i ∈ 1:m
+		x_yi = ys .== i
+		if any(x_yi)
+			t[i] = mean(ps[x_yi, i])
+		else
+			t[i] = mean(ps[:, i])
+		end
+	end
+	t
+	# @show t
+end
+
+# ╔═╡ 1dba3ac3-eb7c-442c-a474-cd7b415a4594
+@time t = avg_confidence(p̂, ỹ)
+
+# ╔═╡ 154ea90b-578c-4348-be28-69a3877e48d0
+sum(t)
+
 # ╔═╡ 6c190eec-b8bc-4915-9d20-cac0280b4131
 md"""
-Mức độ vượt chỉ tiêu của từng xác suất dự đoán là 
+Mức độ vượt chỉ tiêu của từng xác suất dự đoán là
 """
+
+# ╔═╡ 71c14b17-6fda-4b0a-b30f-c3c181d35b12
+t2p = p̂ .- t'
 
 # ╔═╡ 73ef22d7-0961-46fa-93a8-c149c62f0ba8
 md""" ## Chọn nhãn khả tín
@@ -131,14 +149,23 @@ Danh sách nhãn đáng tin nhất đối với từng mẫu là như sau, trong
 
 - mask_negative: For some specific sample, if the normalized probabilities are all negative then we use 0 to mark that there is no likely class label for the sample."
 function find_likely_label(t2p::Array{Float64,2}, mask_negative::Bool=false)
-	am = argmax(t2p, dims=2)[:]
+	# @show t2p
+	am = argmax(t2p, dims=2)
+	# @show am
+	# @time am = am[:]
+	# @show am
 	likely_labels = last.(Tuple.(am))
-	if mask_negative
+	ll = if mask_negative
 		ifelse.(any(t2p .≥ 0, dims=2)[:], likely_labels, 0)
 	else
 		likely_labels
 	end
+	vec(ll)
+	# @show ll
 end
+
+# ╔═╡ 5921b759-9474-414f-a25a-416aec299afb
+@time l̂ = find_likely_label(t2p)
 
 # ╔═╡ 451f8698-2c6c-4cf1-8e1a-ede8cc1c535b
 md"""
@@ -146,12 +173,12 @@ Xếp các mẫu vào ma trận có hàng thể hiện nhãn đã quan sát $\ti
 """
 
 # ╔═╡ 45b1feb2-45d3-46df-973a-8b95a70ea164
-# Xỹẏ = partition_X(l̂, ỹ, M)
+# Xỹẏ = partition_X(l̂, ỹ, 1:m)
 
 # ╔═╡ 2a49d3be-d6ae-43fd-8fe8-a14800c023c9
 function partition_X(
-	ls::Array{Int64,1}, 
-	ys::Array{Int64,1}, 
+	ls::Array{Int64,1},
+	ys::Array{Int64,1},
 	M::Array{Int64,1})
 	# @show ys
 	# @show ls
@@ -171,85 +198,81 @@ md"""
 Độ khả nghi của các mẫu dữ liệu là như sau.
 """
 
-# ╔═╡ b33c68aa-0a24-4622-8e4d-d9abbce885a5
+# ╔═╡ 14d5fa77-7393-41ef-95e2-6848976c3346
+t2p
+
+# ╔═╡ f44f3c50-2c8f-4ea6-b712-07fa9f951ffb
 function rank_suspicious(
-	ps::Array{Float64,2}, 
+	ps::Array{Float64,2},
 	ls::Array{Int64,1},
-	ys::Array{Int64,1},
+	ys::Array{Int64,1}
 )
-	# @show ps
 	# @show ls
 	# @show ys
-	n = length(ys)
-	e = spzeros(Float64, n)	
-	# @show e
+	n,m = size(ps)
+	e = spzeros(Float64, n)
 	ids = (ls.≠ys) .&& (ls.≠0)
 	for k in (1:n)[ids]
-		e[k] = ps[k, ls[k]] - ps[k, ys[k]] 
+		e[k] = ps[k, ls[k]] - ps[k, ys[k]]
+		# @show k, ls[k], ys[k], e[k]
 	end
 	# @show e
 	e
 end
 
-# ╔═╡ 8fadfa66-a730-4f99-aa70-e25fec26cb09
-function avg_confidence(
-	ps::Array{Float64,2}, 
-	ys::Array{Int64,1}, 
-	M::Array{Int64,1},
-)
-	t = [mean(ps[ys .== i, i]) for i ∈ M]'
-end
-
 # ╔═╡ df59e679-7e5d-4c3e-b49d-6cd899ca55d9
 "Rank the suspiciouness of observed labels.
 
-Parameters: 
+Parameters:
 - `p`: predicted probabilities given by some model
 - `y`: observed labels of the samples
-- `M`: unique classes of possible labels
-
-If not specified, `M` will be computed by taking unique values of `y` and sort them.
 "
 function lapros(
-	p::Array{Float64,2}, 
-	y::Array{Int64,1}, 
-	M::Array{Int64,1},
+	p::Array{Float64,2},
+	y::Array{Int64,1}
 )
-	t = avg_confidence(p, y, M)
-	ll = find_likely_label(p .- t)
-	rank = rank_suspicious(p, ll, y)
+	t = avg_confidence(p, y)
+	@time ll = find_likely_label(p .- t')
+	@time rank = rank_suspicious(p, ll, y)
 end
 
 # ╔═╡ 2c9a31f4-6abd-40ef-a3b3-f6eb39eda059
-errs = lapros(p̂, ỹ, M)
-
-# ╔═╡ 026a4124-a6df-4ae3-a23b-fd676fd3b2cb
-errs_ = lapros(p̂, ỹ)
-
-# ╔═╡ b8555fa5-d21c-44da-832c-1366f304cde4
-@assert all(errs .≡ errs_)
-
-# ╔═╡ 1dba3ac3-eb7c-442c-a474-cd7b415a4594
-t = avg_confidence(p̂, ỹ, M)
-
-# ╔═╡ 154ea90b-578c-4348-be28-69a3877e48d0
-sum(t)
-
-# ╔═╡ 71c14b17-6fda-4b0a-b30f-c3c181d35b12
-t2p = p̂ .- t
-
-# ╔═╡ 5921b759-9474-414f-a25a-416aec299afb
-l̂ = find_likely_label(t2p)
+@time errs = lapros(p̂, ỹ)
 
 # ╔═╡ a7dfaa5e-7376-49c7-b025-f16e4c5b8f56
-rank_suspicious(t2p, l̂, ỹ)
+@time rank = rank_suspicious(t2p, l̂, ỹ)
 
-# ╔═╡ 2dbdc102-5f61-4888-9bae-96d8bbf333a5
-# Ma trận True/False thể hiện việc xác suất dự đoán có đạt chỉ tiêu hay không:
-t2p_positive = t2p .≥ 0;
+# ╔═╡ 7edc3678-03fe-4eb8-ab39-f7033a06e93d
+# begin
+# 	@time rank_v1 = rank_suspicious_v1(t2p, l̂, ỹ)
+# 	@assert all(rank .≡ rank_v1)
+# end
 
-# ╔═╡ 82974108-2917-41f8-a8b2-0fe323331b48
-@assert t2p_positive == (p̂ .≥ t)
+# ╔═╡ b33c68aa-0a24-4622-8e4d-d9abbce885a5
+function rank_suspicious_v1(
+	ps::Array{Float64,2},
+	ls::Array{Int64,1},
+	ys::Array{Int64,1}
+)
+	# @show ls
+	# @show ys
+	n,m = size(ps)
+	e = spzeros(Float64, n)
+	ids = (ls.≠ys) .&& (ls.≠0)
+	# @show ids
+	# @show (1:n)[ids]
+	for j in 1:m
+		# @show j
+		idls = (1:n)[ids .&& (ls.≡j)]
+		# @show idls
+		e[idls] += ps[idls, j]
+		idys = (1:n)[ids .&& (ys.≡j)]
+		# @show idys
+		e[idys] -= ps[idys, j]
+		# @show e
+	end
+	e
+end
 
 # ╔═╡ 29cd589c-b3e9-4a65-9641-352129a27c1e
 # using PlutoUI; TableOfContents()
@@ -260,6 +283,7 @@ PLUTO_PROJECT_TOML_CONTENTS = """
 Chain = "8be319e6-bccf-4806-a6f7-6fae938471bc"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
+Formatting = "59287772-0a20-5a39-b81b-1366585eb4c0"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
@@ -269,6 +293,7 @@ StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 Chain = "~0.5.0"
 DataFrames = "~1.3.4"
 DataStructures = "~0.18.13"
+Formatting = "~0.4.2"
 StatsBase = "~0.33.19"
 """
 
@@ -590,7 +615,6 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╟─9cb3568a-9b59-438e-9ca0-c10c93247d92
 # ╠═34e904a0-5909-4cdd-a025-068dbb1a6cd1
 # ╟─dc3a9ad9-6a90-437b-9893-d59788b8bafb
-# ╟─d1dd37af-7def-4a27-add4-223bf76757e2
 # ╟─8c9ff1af-26ef-42b4-8e1b-39d978b08674
 # ╟─99e5c1b4-89a0-4e70-972e-37dd22d57d37
 # ╠═bbb3b95f-e45f-46b6-b6e6-b41b2b283ab2
@@ -598,15 +622,13 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╠═2c9a31f4-6abd-40ef-a3b3-f6eb39eda059
 # ╠═df59e679-7e5d-4c3e-b49d-6cd899ca55d9
 # ╟─1dbe808e-85e0-4052-b6ac-90fa86300ba7
-# ╠═b8555fa5-d21c-44da-832c-1366f304cde4
-# ╠═026a4124-a6df-4ae3-a23b-fd676fd3b2cb
-# ╠═a6a56ac9-6849-49f9-bbce-4222cf663c80
 # ╟─faa8ebef-ff1a-486d-926f-3ab1a782eaf1
 # ╠═95d29260-af27-48ca-a3a7-120575b318a4
 # ╟─0327985e-859f-4c0e-a232-856aa31b0c44
 # ╟─846072fc-2269-4fbe-89d4-270b71cf5339
 # ╟─68fef702-a604-4f03-87da-09984af59898
 # ╠═1dba3ac3-eb7c-442c-a474-cd7b415a4594
+# ╠═8fadfa66-a730-4f99-aa70-e25fec26cb09
 # ╠═154ea90b-578c-4348-be28-69a3877e48d0
 # ╟─6c190eec-b8bc-4915-9d20-cac0280b4131
 # ╠═71c14b17-6fda-4b0a-b30f-c3c181d35b12
@@ -621,10 +643,10 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╠═2a49d3be-d6ae-43fd-8fe8-a14800c023c9
 # ╟─9c063c91-0497-40c2-8eb1-bdf8060aaf70
 # ╠═a7dfaa5e-7376-49c7-b025-f16e4c5b8f56
+# ╠═14d5fa77-7393-41ef-95e2-6848976c3346
+# ╠═f44f3c50-2c8f-4ea6-b712-07fa9f951ffb
+# ╠═7edc3678-03fe-4eb8-ab39-f7033a06e93d
 # ╠═b33c68aa-0a24-4622-8e4d-d9abbce885a5
-# ╠═8fadfa66-a730-4f99-aa70-e25fec26cb09
-# ╠═2dbdc102-5f61-4888-9bae-96d8bbf333a5
-# ╠═82974108-2917-41f8-a8b2-0fe323331b48
 # ╠═0911e262-5124-4aa9-b1ba-feacec87b49e
 # ╟─29cd589c-b3e9-4a65-9641-352129a27c1e
 # ╟─00000000-0000-0000-0000-000000000001

@@ -132,6 +132,8 @@ $\vect{C}_{\yo=i} \defined |\X_{\yo=i}|.$
 Vì phép tính trung bình được thực hiện trên từng tập
 $\X_{\yo=i}$
 nên có thể $\sum\limits_{i\in M}{\thres_i} \neq 1.$
+Ta đề xuất lấy trung bình trên toàn bộ tập $\X$
+nếu $\X_{\yo=i}\equiv\emptyset.$
 
 Với mỗi lớp $i\in M$ ta chọn chỉ tiêu tự tin $\thres_i\in(0,1)$
 bằng độ tự tin trung bình \@ref(eq:avgconfidence).
@@ -150,19 +152,26 @@ Tập hợp nhãn khả dĩ đối với mẫu $\x$ là
 
 Với giả định xác suất \@ref(eq:probasum1)
 và chỉ tiêu tự tin \@ref(eq:avgconfidence),
-ta kỳ vọng $\Lmtx\neq\emptyset.$
-Từ đó chọn một nhãn có xác suất dự đoán lớn nhất:
+với kỳ vọng $\Lmtx\neq\emptyset,$
+CleanLab (Curtis et al.’s 2021)
+chọn một nhãn có xác suất dự đoán lớn nhất:
 \begin{equation}
 \lmtx \defined
-\begin{cases}
-\mathop{\rm arg max} \limits_{i\in \Lmtx} \pyx{\x}, & \text{không xét chỉ tiêu}\\
-\mathop{\rm arg max} \limits_{i\in \Lmtx} \{\pyx{\x} - \thres_i\}, & \text{có bù trừ chỉ tiêu}
-\end{cases}
-(\#eq:lmtx)
+\mathop{\rm arg max}\limits_{i\in \Lmtx}\pyx{\x}
+(\#eq:lmtxcleanlab)
 \end{equation}
 
 để làm nhãn "đáng tin nhất" cho mẫu $\x.$
 
+Ta đề xuất
+bù trừ chỉ tiêu vào công thức trên để cân đối với độ tự tin của mô hình,
+đồng thời
+nới lỏng ràng buộc $i\in \Lmtx$ để tránh trường hợp không chọn được nhãn đáng tin,
+\begin{equation}
+\lmtx \defined
+\mathop{\rm arg max}\limits_{i\in M}\{\pyx{\x} - \thres_i\}.
+(\#eq:lmtx)
+\end{equation}
 
 ## Xếp hạng khả nghi
 
@@ -189,14 +198,17 @@ dựa theo xác suất do mô hình $\model$ dự đoán:
 (\#eq:errnoise)
 \end{equation}
 theo cách làm trong CleanLab của Curtis et al.’s (2021), và đảo dấu so với Wei et al.’s (2018).
-Ta cũng có thể bù trừ chỉ tiêu tự tin vào để tính độ khả nghi:
+
+Chúng tôi đề xuất bù trừ chỉ tiêu tự tin vào để tính độ khả nghi:
 \begin{equation}
 e_\thres(\x) \defined
 \max_{j\neq i}{\{\pyix{j}{\x}-\thres_j\}}
 -\{\pyx{\x} - \thres_i\}
-\quad \forall \x\in\X_{\yo=i}.
+\quad \forall \x\in\X_{\yo=i};
 (\#eq:eq4)
 \end{equation}
+bảo đảm
+$e_\thres(\x)\in[0,1].$
 
 ## Ước lượng ma trận nhiễu
 
