@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.9
+# v0.19.11
 
 using Markdown
 using InteractiveUtils
@@ -12,21 +12,30 @@ begin
 	using DataFrames: DataFrame
 	import Random
 	using StatsBase: sample
-	Random.seed!(333)
+	SEED = 333
+	Random.seed!(SEED)
 end;
 
+# ╔═╡ 2f312588-71c9-4d12-8156-ac5a873fd0dc
+data_folder = "data/input/"
+
 # ╔═╡ 83ef4c9e-0e27-11ed-2fa2-1fab901f3b13
-n = 10*10^6 # number of samples
+n = 10*10^0 # number of samples
 
 # ╔═╡ bef6e63d-205c-420a-b2f7-e9d45ef33c99
 m = 3
 
 # ╔═╡ 83b15f19-8f2c-4201-a0a3-23fb5c38b182
-labels = sample(1:m, n)
+labels = let
+	Random.seed!(SEED)
+	sample(1:m, n)
+end
 
 # ╔═╡ cd7ec936-09f6-4412-b5f4-5c31a4639a5b
-probas = @chain rand(Float64, (n, m)) begin
-	_ ./ sum(_, dims=2)
+probas = let
+	Random.seed!(SEED)
+	ps = rand(Float64, (n, m))
+	ps ./ sum(ps, dims=2)
 end
 
 # ╔═╡ bbd796e5-d390-4b60-88bf-bd904e9a746d
@@ -40,10 +49,10 @@ begin
 end
 
 # ╔═╡ 54e5c023-6849-4dbd-ae49-92b49836042d
-begin
+let
 	csv_limit = 10^3
 	fp_postfix = if n ≤ csv_limit "csv" else "arrow" end
-	data_fp = "/opt/ml-data/lapros/lapros-testdata-n$(n)-m$(m).$(fp_postfix)"
+	data_fp = joinpath(data_folder, "lapros-testdata-n$(n)-m$(m).$(fp_postfix)")
 	if endswith(data_fp, ".csv")
 		CSV.write(data_fp, df)
 	else
@@ -523,11 +532,12 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 """
 
 # ╔═╡ Cell order:
+# ╠═2f312588-71c9-4d12-8156-ac5a873fd0dc
 # ╠═83ef4c9e-0e27-11ed-2fa2-1fab901f3b13
 # ╠═bef6e63d-205c-420a-b2f7-e9d45ef33c99
 # ╠═54e5c023-6849-4dbd-ae49-92b49836042d
-# ╟─83b15f19-8f2c-4201-a0a3-23fb5c38b182
-# ╟─cd7ec936-09f6-4412-b5f4-5c31a4639a5b
+# ╠═83b15f19-8f2c-4201-a0a3-23fb5c38b182
+# ╠═cd7ec936-09f6-4412-b5f4-5c31a4639a5b
 # ╠═bbd796e5-d390-4b60-88bf-bd904e9a746d
 # ╠═a7ebe81b-4a9a-46aa-b178-39a9b7fd0238
 # ╟─00000000-0000-0000-0000-000000000001
