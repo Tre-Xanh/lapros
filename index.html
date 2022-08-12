@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.0.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Chi Cong Vo">
+<meta name="dcterms.date" content="2022-07-01">
+
+<title>LaPros</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">LaPros</span>
+  </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./index.html" aria-current="page">Home</a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html">About</a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#mở-đầu" id="toc-mở-đầu" class="nav-link active" data-scroll-target="#mở-đầu"> <span class="header-section-number">1</span> Mở đầu</a>
+  <ul class="collapse">
+  <li><a href="#lỗi-quan-sát-nhãn-là-gì" id="toc-lỗi-quan-sát-nhãn-là-gì" class="nav-link" data-scroll-target="#lỗi-quan-sát-nhãn-là-gì"> <span class="header-section-number">1.1</span> Lỗi quan sát nhãn là gì?</a></li>
+  <li><a href="#quy-trình-nhiễu-theo-lớp" id="toc-quy-trình-nhiễu-theo-lớp" class="nav-link" data-scroll-target="#quy-trình-nhiễu-theo-lớp"> <span class="header-section-number">1.2</span> Quy trình nhiễu theo lớp</a></li>
+  <li><a href="#ví-dụ-cụ-thể" id="toc-ví-dụ-cụ-thể" class="nav-link" data-scroll-target="#ví-dụ-cụ-thể"> <span class="header-section-number">1.3</span> Ví dụ cụ thể</a></li>
+  <li><a href="#ma-trận-nhiễu-theo-lớp" id="toc-ma-trận-nhiễu-theo-lớp" class="nav-link" data-scroll-target="#ma-trận-nhiễu-theo-lớp"> <span class="header-section-number">1.4</span> Ma trận nhiễu theo lớp</a></li>
+  </ul></li>
+  <li><a href="#đánh-giá-độ-khả-nghi" id="toc-đánh-giá-độ-khả-nghi" class="nav-link" data-scroll-target="#đánh-giá-độ-khả-nghi"> <span class="header-section-number">2</span> Đánh giá độ khả nghi</a>
+  <ul class="collapse">
+  <li><a href="#khái-quát" id="toc-khái-quát" class="nav-link" data-scroll-target="#khái-quát"> <span class="header-section-number">2.1</span> Khái quát</a></li>
+  <li><a href="#chỉ-tiêu-tự-tin" id="toc-chỉ-tiêu-tự-tin" class="nav-link" data-scroll-target="#chỉ-tiêu-tự-tin"> <span class="header-section-number">2.2</span> Chỉ tiêu tự tin</a></li>
+  <li><a href="#xếp-hạng-khả-nghi" id="toc-xếp-hạng-khả-nghi" class="nav-link" data-scroll-target="#xếp-hạng-khả-nghi"> <span class="header-section-number">2.3</span> Xếp hạng khả nghi</a></li>
+  <li><a href="#ước-lượng-ma-trận-nhiễu" id="toc-ước-lượng-ma-trận-nhiễu" class="nav-link" data-scroll-target="#ước-lượng-ma-trận-nhiễu"> <span class="header-section-number">2.4</span> Ước lượng ma trận nhiễu</a></li>
+  </ul></li>
+  <li><a href="#cuối-cùng" id="toc-cuối-cùng" class="nav-link" data-scroll-target="#cuối-cùng"> <span class="header-section-number">3</span> Cuối cùng</a>
+  <ul class="collapse">
+  <li><a href="#triển-vọng" id="toc-triển-vọng" class="nav-link" data-scroll-target="#triển-vọng"> <span class="header-section-number">3.1</span> Triển vọng</a></li>
+  <li><a href="#tham-khảo" id="toc-tham-khảo" class="nav-link" data-scroll-target="#tham-khảo"> <span class="header-section-number">3.2</span> Tham khảo</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">LaPros</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Chi Cong Vo </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">July 1, 2022</p>
+    </div>
+  </div>
+    
+  </div>
+  
+
+</header>
+
+<section id="mở-đầu" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Mở đầu</h1>
+<p>Có một bộ dữ liệu bảng số, được gắn nhãn để phân loại, ví dụ nhãn dương tính và âm tính. Giả sử các nhãn dương tính có độ tin cậy cao, còn các nhãn âm tính có độ tin cậy thấp hơn, có thể xem như chứa cả dữ liệu dương tính chưa bộc phát. Lấy ví dụ với dữ liệu đánh giá tín dụng thì những ca vỡ nợ sẽ có nhãn dương tính. Với dữ liệu khám nghiệm ung thư thì những ca đã phát bệnh là dương tính.</p>
+<p><em>Giả sử phân bố nhãn trong bộ dữ liệu trên có tương quan đủ mạnh với phân bố nhãn tiềm ẩn thật sự</em>. Trong phân bố nhãn có tiềm ẩn tính đa dạng, bất định mang tính bản chất. Ví dụ có 10 người có các thuộc tính xấu gần giống nhau, nhưng sẽ trong đó sẽ chỉ có 8 người ngẫu nhiên nào đó vỡ nợ, hoặc bị ung thư.</p>
+<p>Bộ dữ liệu trên có một số lượng nhất định các nhãn bị gắn sai. Có thể nào xác định được ranh giới để phân biệt được lỗi gắn nhãn với tính bất định bản chất của dữ liệu hay không?</p>
+<p><em>Giả sử rằng suất nhãn bị gán sai không phụ thuộc vào từng ca dữ liệu cụ thể mà chỉ phụ thuộc vào đặc tính của các lớp nhãn dữ liệu</em>. Ví dụ trường hợp phân loại 3 loài vật là chó, mèo và chuột, thì xác suất nhầm chó với mèo cao hơn là nhầm mèo với chuột hoặc chó với chuột.</p>
+<p>Có một mô hình dự đoán xác suất dương tính đối với bộ dữ liệu nêu trên. <em>Giả sử xác suất do mô hình đưa ra có tương quan đủ mạnh đối với phân bố thật sự của nhãn</em>.</p>
+<p>Với những giả sử nêu trên, ta có thể ước lượng được xác suất nhãn gắn trên một ca dữ liệu là thật sự đúng hay không?</p>
+<section id="lỗi-quan-sát-nhãn-là-gì" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="lỗi-quan-sát-nhãn-là-gì"><span class="header-section-number">1.1</span> Lỗi quan sát nhãn là gì?</h2>
+<p>Với một đối tượng khảo sát, quan sát viên sẽ quan sát, xem xét, nghiên cứu rồi gán một nhãn nhất định cho dữ liệu đó. Trong môi trường lý tưởng thì ta sẽ nhận định và gán đúng nhãn “chân lý” cho đối tượng.</p>
+<p>Ví dụ ta có thể quan sát ngực, bụng, mông của một người nào đó và nhận định giới tính. Trong thực tế thì có thể xảy ra nhầm lẫn ở một bước nào đó trong quá trình từ khi bắt đầu quan sát cho đến khi gắn xong nhãn. Nhầm lẫn đó có thể dẫn tới gán nhầm nhãn “Nam” cho đối tượng vốn là “Nữ”, hoặc ngược lại. Chúng ta gọi “lỗi quan sát nhãn” và “lỗi gắn nhãn” với cùng một ý nghĩa.</p>
+<p>Có thể có một số nam giới và nữ giới có số đo 3 vòng khá giống nhau, nhưng “đương nhiên” họ có 2 giới tính khác nhau, tức là các nhãn “chân lý” của họ là khác nhau về bản chất, chứ không nhất thiết có liên quan đến việc gắn nhãn có lỗi hay không.</p>
+<p>Nói cách khác từ số đo 3 vòng ta có thể không suy đoán được chắc chắn 100% nhưng có thể tính được xác suất giới tính Nam/Nữ của đối tượng. Quy tắc hay mô hình suy đoán có thể học được từ một tập dữ liệu có số đo 3 vòng và giới tính tương ứng của nhiều mẫu người khác nhau. Nếu trong tập dữ liệu này có những nhãn giới tính bị gắn sai thì việc học xác suất “chân lý” sẽ bị lệch lạc.</p>
+</section>
+<section id="quy-trình-nhiễu-theo-lớp" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="quy-trình-nhiễu-theo-lớp"><span class="header-section-number">1.2</span> Quy trình nhiễu theo lớp</h2>
+<p>Giả sử có một bộ dữ liệu số được gắn nhãn phân loại thành <span class="math inline">\(m\)</span> lớp khác nhau <span class="math inline">\(M ≔{1,2,\ldots,m}\)</span>. Giả sử đối với mỗi mẫu dữ liệu ta có một nhãn “tiềm ẩn” thật là <span class="math inline">\(\dot{y}\)</span>. Trước khi quan sát được nhãn <span class="math inline">\(\tilde{y}\)</span>, giả sử có một quy trình gây nhiễu biến <span class="math inline">\(\dot{y}=j\)</span> thành <span class="math inline">\(\tilde{y}=i\)</span> với xác suất <span class="math inline">\(\dot{p}(\tilde{y}=i, \dot{y}=j)\)</span> chỉ phụ thuộc vào <span class="math inline">\(i,j \in M\)</span> và độc lập với các mẫu dữ liệu cụ thể,</p>
+<p><span class="math display">\[\dot{p}(\tilde{y}| \dot{y}; {\boldsymbol{{x}}}) \equiv \dot{p}(\tilde{y}| \dot{y}) \forall{\boldsymbol{{x}}}.\]</span></p>
+<p>Ví dụ khi phân loại 3 loài vật là chó, mèo và chuột, thì xác suất nhầm chó với mèo cao hơn là nhầm mèo với chuột hoặc chó với chuột, và xác suất đó không phụ thuộc vào từng con thú cụ thể. Giả sử này là hợp lý và thường được sử dụng trong các nghiên cứu về xử lý nhiễu (Goldberger and Ben-Reuven, 2017; Sukhbaatar et al., 2015).</p>
+</section>
+<section id="ví-dụ-cụ-thể" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="ví-dụ-cụ-thể"><span class="header-section-number">1.3</span> Ví dụ cụ thể</h2>
+<p>Xem ví dụ với <a href="lapros.jl.html">dữ liệu cụ thể tại đây</a>.</p>
+</section>
+<section id="ma-trận-nhiễu-theo-lớp" class="level2" data-number="1.4">
+<h2 data-number="1.4" class="anchored" data-anchor-id="ma-trận-nhiễu-theo-lớp"><span class="header-section-number">1.4</span> Ma trận nhiễu theo lớp</h2>
+<p><span class="math display">\[\dot{{\boldsymbol{{Q}}}}_{\tilde{y}, \dot{y}} ≔\left[ {\begin{array}{ccc}
+    \dot{p}(\tilde{y}=1, \dot{y}=1) &amp; \ldots &amp; \dot{p}(\tilde{y}=1, \dot{y}=m) \\
+    \vdots &amp; \dot{p}(\tilde{y}=i, \dot{y}=j) &amp; \vdots \\
+    \dot{p}(\tilde{y}=m, \dot{y}=1) &amp; \ldots &amp; \dot{p}(\tilde{y}=m, \dot{y}=m) \\
+  \end{array} } \right]\]</span></p>
+<p>là ma trận kích thước <span class="math inline">\(m\times m\)</span> thể hiện phân phối xác suất đồng thời cho <span class="math inline">\(\tilde{y}\)</span> và <span class="math inline">\(\dot{y}.\)</span></p>
+<p><strong>Độ thưa</strong> là tỷ lệ số <span class="math inline">\(0\)</span> chiếm lĩnh các vị trí ngoại trừ đường chéo của ma trận <span class="math inline">\(\dot{{\boldsymbol{{Q}}}}_{\tilde{y},\dot{y}}\)</span>: độ thưa bằng <span class="math inline">\(0\)</span> nói rằng mọi tỷ lệ nhiễu <span class="math inline">\(p_{\tilde{y},\dot{y}}\)</span> đều khác <span class="math inline">\(0\)</span>, còn độ thưa <span class="math inline">\(1\)</span> thể hiện tình trạng lý tưởng, hoàn toàn không có nhiễu trong nhãn.</p>
+<p>Gọi <span class="math inline">\({\boldsymbol{{X}}}_{\tilde{y}=i}\)</span> là tập hợp các mẫu <span class="math inline">\({\boldsymbol{{x}}}\)</span> đã được gán nhãn <span class="math inline">\(\tilde{y}=i\)</span>. <strong>Độ tự tin</strong> <span class="math inline">\(p_{{\boldsymbol{{\phi}}}}(\tilde{y}=i; {\boldsymbol{{x}}}\in{\boldsymbol{{X}}}_{\tilde{y}=i})\)</span> là xác suất mô hình <span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span> đưa ra đối với mẫu <span class="math inline">\({\boldsymbol{{x}}}\)</span>, dự đoán nó có label đúng như label <span class="math inline">\(\tilde{y}\)</span> đã được gán. <em>Độ tự tin thấp là một dấu hiệu của khả năng nhãn có lỗi.</em></p>
+</section>
+</section>
+<section id="đánh-giá-độ-khả-nghi" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Đánh giá độ khả nghi</h1>
+<section id="khái-quát" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="khái-quát"><span class="header-section-number">2.1</span> Khái quát</h2>
+<p><strong>Đầu vào</strong></p>
+<ol type="1">
+<li>Các nhãn <span class="math inline">\(\tilde{y}_k\)</span> đã quan sát được đối với các mẫu <span class="math inline">\({\boldsymbol{{x}}}_k\in{\boldsymbol{{X}}}\)</span></li>
+<li>Xác suất <span class="math inline">\(p_{\tilde{y}={i}}({{\boldsymbol{{x}}}_k})\)</span> mà mô hình <span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span> dự đoán mẫu <span class="math inline">\({\boldsymbol{{x}}}_k\in{\boldsymbol{{X}}}\)</span> có nhãn <span class="math inline">\(i\in M\)</span></li>
+</ol>
+<p>Mặc nhiên</p>
+<p><span class="math display">\[\begin{equation}
+\begin{cases}
+p_{\tilde{y}={i}}({{\boldsymbol{{x}}}}) \geq 0 &amp; \quad\forall i\in M, \forall{\boldsymbol{{x}}}\in{\boldsymbol{{X}}}\\
+\sum\limits_{i\in M}{p_{\tilde{y}={i}}({{\boldsymbol{{x}}}})} \equiv 1 &amp; \quad\forall {\boldsymbol{{x}}}\in{\boldsymbol{{X}}}
+\end{cases}
+(\#eq:probasum1)
+\end{equation}\]</span></p>
+<p><strong>Các bước</strong></p>
+<ol type="1">
+<li>Tính <span class="math inline">\(t_i\)</span>, độ tự tin trung bình theo <span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span> trong từng lớp <span class="math inline">\(i\in M\)</span></li>
+<li>Ước lượng phân bố xác suất đồng thời <span class="math inline">\(\dot{{\boldsymbol{{Q}}}}_{\tilde{y}, \dot{y}}\)</span> cho nhãn quan sát và nhãn thật</li>
+<li><em>Lọc và xếp hạng các mẫu theo mức độ khả nghi nhãn bị lỗi</em></li>
+<li>Loại bỏ các mẫu khả nghi nhất là nhãn bị lỗi</li>
+<li>Đặt trọng số cho các mẫu trong từng lớp <span class="math inline">\(i\in M\)</span> để học một mô hình mới.</li>
+</ol>
+</section>
+<section id="chỉ-tiêu-tự-tin" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="chỉ-tiêu-tự-tin"><span class="header-section-number">2.2</span> Chỉ tiêu tự tin</h2>
+<p>Gọi số lượng mẫu được quan sát có nhãn <span class="math inline">\(\tilde{y}=i\)</span> là <span class="math inline">\({\boldsymbol{{C}}}_{\tilde{y}=i} ≔|{\boldsymbol{{X}}}_{\tilde{y}=i}|.\)</span></p>
+<p>Độ tự tin trung bình của mô hình <span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span> đối với lớp <span class="math inline">\(i\in M\)</span> là</p>
+<p><span class="math display">\[\begin{equation}
+  {\boldsymbol{{t}}}_i = \frac{1}{{\boldsymbol{{C}}}_{\tilde{y}=i}}
+  {\sum\limits_{{\boldsymbol{{x}}}\in{\boldsymbol{{X}}}_{\tilde{y}=i}}p_{\tilde{y}={i}}({{\boldsymbol{{x}}}})}.
+(\#eq:avgconfidence)
+\end{equation}\]</span></p>
+<p>Vì phép tính trung bình được thực hiện trên từng tập <span class="math inline">\({\boldsymbol{{X}}}_{\tilde{y}=i}\)</span> nên có thể <span class="math inline">\(\sum\limits_{i\in M}{{\boldsymbol{{t}}}_i} \neq 1.\)</span> Ta đề xuất lấy trung bình trên toàn bộ tập <span class="math inline">\({\boldsymbol{{X}}}\)</span> nếu <span class="math inline">\({\boldsymbol{{X}}}_{\tilde{y}=i}\equiv\emptyset.\)</span></p>
+<p>Với mỗi lớp <span class="math inline">\(i\in M\)</span> ta chọn chỉ tiêu tự tin <span class="math inline">\({\boldsymbol{{t}}}_i\in(0,1)\)</span> bằng độ tự tin trung bình @ref(eq:avgconfidence). Đối với từng mẫu <span class="math inline">\({\boldsymbol{{x}}}\)</span> và từng nhãn <span class="math inline">\(i\)</span>, giá trị xác suất dự đoán <span class="math inline">\(p_{\tilde{y}={i}}({{\boldsymbol{{x}}}})\)</span> đưa ra bởi mô hình <span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span>, nếu không nhỏ hơn chỉ tiêu <span class="math inline">\({\boldsymbol{{t}}}_i\)</span> thì ta cho rằng nhãn <span class="math inline">\(i\)</span> có khả năng đúng với mẫu <span class="math inline">\({\boldsymbol{{x}}}\)</span>. Tập hợp nhãn khả dĩ đối với mẫu <span class="math inline">\({\boldsymbol{{x}}}\)</span> là</p>
+<p><span class="math display">\[\begin{equation}
+L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})≔\left\{i\in M: p_{\tilde{y}={i}}({{\boldsymbol{{x}}}})\geq {\boldsymbol{{t}}}_i\right\}
+(\#eq:eq2)
+\end{equation}\]</span></p>
+<p>Với giả định xác suất @ref(eq:probasum1) và chỉ tiêu tự tin @ref(eq:avgconfidence), với kỳ vọng <span class="math inline">\(L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})\neq\emptyset,\)</span> CleanLab (Curtis et al.’s 2021) chọn một nhãn có xác suất dự đoán lớn nhất: <span class="math display">\[\begin{equation}
+\hat{l}_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})≔
+\mathop{\rm arg max}\limits_{i\in L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})}p_{\tilde{y}={i}}({{\boldsymbol{{x}}}})
+(\#eq:lmtxcleanlab)
+\end{equation}\]</span></p>
+<p>để làm nhãn “đáng tin nhất” cho mẫu <span class="math inline">\({\boldsymbol{{x}}}.\)</span></p>
+<p>Ta đề xuất bù trừ chỉ tiêu vào công thức trên để cân đối với độ tự tin của mô hình, đồng thời nới lỏng ràng buộc <span class="math inline">\(i\in L_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})\)</span> để tránh trường hợp không chọn được nhãn đáng tin, <span class="math display">\[\begin{equation}
+\hat{l}_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})≔
+\mathop{\rm arg max}\limits_{i\in M}\{p_{\tilde{y}={i}}({{\boldsymbol{{x}}}}) - {\boldsymbol{{t}}}_i\}.
+(\#eq:lmtx)
+\end{equation}\]</span></p>
+</section>
+<section id="xếp-hạng-khả-nghi" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="xếp-hạng-khả-nghi"><span class="header-section-number">2.3</span> Xếp hạng khả nghi</h2>
+<p>Gọi <span class="math inline">\(\dot{{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j}\)</span> là tập (bất khả tri) các mẫu có nhãn quan sát là <span class="math inline">\(i\)</span> và nhãn thật là <span class="math inline">\(j\)</span>, ta ước lượng nó bằng cách dùng các nhãn đáng tin nhất <span class="math inline">\(\hat{l}_{{{\boldsymbol{{\phi}}}},{\boldsymbol{{t}}}}({\boldsymbol{{x}}})\)</span> tại @ref(eq:lmtx):</p>
+<p><span class="math display">\[\begin{equation}
+{{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j} ≔
+\left\{{\boldsymbol{{x}}}\in{\boldsymbol{{X}}}_{\tilde{y}=i}:
+\hat{l}_{{{\boldsymbol{{\phi}}}}({\boldsymbol{{x}}}),{\boldsymbol{{t}}}} \equiv j
+\right\}
+(\#eq:eq3b)
+\end{equation}\]</span></p>
+<p>Đơn thuần (mà lại hiệu quả) nhất, ta nghi ngờ các mẫu <span class="math inline">\(\left\{{\boldsymbol{{x}}}\in{{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j}: i\neq j\right\}\)</span> nằm ngoài đường chéo của ma trận <span class="math inline">\({{\boldsymbol{{X}}}}_{\tilde{y},\dot{y}}\)</span> là có nhãn lỗi. Xếp hạng mức độ khả nghi của các mẫu đó dựa theo xác suất do mô hình <span class="math inline">\({{\boldsymbol{{\phi}}}}\)</span> dự đoán: <span class="math display">\[\begin{equation}
+{e}({{\boldsymbol{{x}}}}) ≔\max_{j\neq i}{p_{\tilde{y}={j}}({{\boldsymbol{{x}}}})}
+-p_{\tilde{y}={i}}({{\boldsymbol{{x}}}})\quad \forall {\boldsymbol{{x}}}\in{\boldsymbol{{X}}}_{\tilde{y}=i}
+(\#eq:errnoise)
+\end{equation}\]</span> theo cách làm trong CleanLab của Curtis et al.’s (2021), và đảo dấu so với Wei et al.’s (2018).</p>
+<p>Chúng tôi đề xuất bù trừ chỉ tiêu tự tin vào để tính độ khả nghi: <span class="math display">\[\begin{equation}
+e_{\boldsymbol{{t}}}({\boldsymbol{{x}}}) ≔
+\max_{j\neq i}{\{p_{\tilde{y}={j}}({{\boldsymbol{{x}}}})-{\boldsymbol{{t}}}_j\}}
+-\{p_{\tilde{y}={i}}({{\boldsymbol{{x}}}}) - {\boldsymbol{{t}}}_i\}
+\quad \forall {\boldsymbol{{x}}}\in{\boldsymbol{{X}}}_{\tilde{y}=i};
+(\#eq:eq4)
+\end{equation}\]</span> bảo đảm <span class="math inline">\(e_{\boldsymbol{{t}}}({\boldsymbol{{x}}})\in[0,1].\)</span></p>
+</section>
+<section id="ước-lượng-ma-trận-nhiễu" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="ước-lượng-ma-trận-nhiễu"><span class="header-section-number">2.4</span> Ước lượng ma trận nhiễu</h2>
+<p>Ma trận đếm cặp nhãn <span class="math inline">\({{\boldsymbol{{C}}}}_{\tilde{y},\dot{y}}\)</span> kích thước <span class="math inline">\(m\times m\)</span> lưu số phần tử của các tập <span class="math inline">\({{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j}\)</span>,</p>
+<p><span class="math display">\[\begin{equation}
+{{\boldsymbol{{C}}}}_{\tilde{y}=i,\dot{y}=j} ≔|{{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j} |
+(\#eq:eq5)
+\end{equation}\]</span></p>
+<p>ví dụ <span class="math inline">\({{\boldsymbol{{C}}}}_{\tilde{y}=3,\dot{y}=1} = 10\)</span> có nghĩa là, đếm được 10 mẫu được gán nhãn <span class="math inline">\(3\)</span> nhưng “thật ra” nên có nhãn <span class="math inline">\(1.\)</span></p>
+<p>Vì @ref(eq:eq3b) ước lượng <span class="math inline">\({{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j}\approx\dot{{\boldsymbol{{X}}}}_{\tilde{y}=i,\dot{y}=j}\)</span> cho nên <span class="math inline">\(\sum\limits_{j\in M}{{\boldsymbol{{C}}}}_{\tilde{y}=i,\dot{y}=j} \approx {\boldsymbol{{C}}}_{\tilde{y}=i}.\)</span></p>
+<p>Hiệu chỉnh ma trận đếm cặp nhãn qua hai bước. Bước đầu, hiệu chỉnh từng dòng theo số mẫu của từng lớp đã quan sát <span class="math inline">\(i\in M,\)</span></p>
+<p><span class="math display">\[\begin{equation}
+\check{Q}_{\tilde{y}=i,\dot{y}=j} = \frac{{{\boldsymbol{{C}}}}_{\tilde{y}=i,\dot{y}=j}}{\sum\limits_{j\in M}{{\boldsymbol{{C}}}}_{\tilde{y}=i,\dot{y}=j}}
+{{\boldsymbol{{C}}}_{\tilde{y}=i}}.
+(\#eq:eq6a)
+\end{equation}\]</span></p>
+<p>Cuối cùng, ta chia đều toàn bộ để tổng ma trận trở thành <span class="math inline">\(1.\)</span></p>
+<p><span class="math display">\[\begin{equation}
+{\boldsymbol{{Q}}}_{\tilde{y}=i,\dot{y}=j}=\frac{\check{Q}_{\tilde{y}=i,\dot{y}=j}}{\sum\limits_{i,j\in M}\check{Q}_{\tilde{y}=i,\dot{y}=j}}.
+(\#eq:eq6b)
+\end{equation}\]</span></p>
+<p>Curtis et al.’s (2021) trình bày một số phương pháp dùng ma trận nhiễu @ref(eq:eq6b) để chọn lọc và xếp hạng nhãn khả nghi có lỗi.</p>
+</section>
+</section>
+<section id="cuối-cùng" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Cuối cùng</h1>
+<section id="triển-vọng" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="triển-vọng"><span class="header-section-number">3.1</span> Triển vọng</h2>
+<p>Một số hướng nghiên cứu tương lai</p>
+<ul>
+<li>Tối ưu hóa giá trị chỉ tiêu tự tin</li>
+<li>Xử lý với bài toán hồi quy</li>
+<li>Tương tác qua lại giữa việc học mô hình và việc khử lỗi</li>
+</ul>
+</section>
+<section id="tham-khảo" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="tham-khảo"><span class="header-section-number">3.2</span> Tham khảo</h2>
+<ul>
+<li>Curtis G. Northcutt and Lu Jiang and Isaac L. Chuang (2021). Confident Learning: Estimating Uncertainty in Dataset Labels. Journal of Artificial Intelligence Research (JAIR)</li>
+<li><a href="https://l7.curtisnorthcutt.com/confident-learning">An Introduction to Confident Learning: Finding and Learning with Label Errors in Datasets (curtisnorthcutt.com)</a></li>
+<li><a href="https://github.com/cleanlab/cleanlab">cleanlab/cleanlab: The standard data-centric AI package for data quality and machine learning with messy, real-world data and labels. (github.com)</a></li>
+<li><a href="https://medium.com/towards-data-science/confident-learning-err-did-you-say-your-data-is-clean-ef2597903328">Are Label Errors Imperative? Is Confident Learning Useful? | by Suneeta Mall | May, 2022 | Towards Data Science (medium.com)</a></li>
+<li>Wei, C., Lee, J. D., Liu, Q., and Ma, T. (2018). On the margin theory of feedforward neural networks. Computing Research Repository (CoRR)</li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    setTimeout(function() {
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      let href = ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const cites = ref.parentNode.getAttribute('data-cites').split(' ');
+    tippyHover(ref, function() {
+      var popup = window.document.createElement('div');
+      cites.forEach(function(cite) {
+        var citeDiv = window.document.createElement('div');
+        citeDiv.classList.add('hanging-indent');
+        citeDiv.classList.add('csl-entry');
+        var biblioDiv = window.document.getElementById('ref-' + cite);
+        if (biblioDiv) {
+          citeDiv.innerHTML = biblioDiv.innerHTML;
+        }
+        popup.appendChild(citeDiv);
+      });
+      return popup.innerHTML;
+    });
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
