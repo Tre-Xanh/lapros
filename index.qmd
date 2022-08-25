@@ -1,0 +1,56 @@
+# Mở đầu
+
+Có một bộ dữ liệu bảng số, được gắn nhãn để phân loại, ví dụ nhãn dương tính và âm tính. Giả sử các nhãn dương tính có độ tin cậy cao, còn các nhãn âm tính có độ tin cậy thấp hơn, có thể xem như chứa cả dữ liệu dương tính chưa bộc phát. Lấy ví dụ với dữ liệu đánh giá tín dụng thì những ca vỡ nợ sẽ có nhãn dương tính. Với dữ liệu khám nghiệm ung thư thì những ca đã phát bệnh là dương tính.
+
+_Giả sử phân bố nhãn trong bộ dữ liệu trên có tương quan đủ mạnh với phân bố nhãn tiềm ẩn thật sự_. Trong phân bố nhãn có tiềm ẩn tính đa dạng, bất định mang tính bản chất. Ví dụ có 10 người có các thuộc tính xấu gần giống nhau, nhưng sẽ trong đó sẽ chỉ có 8 người ngẫu nhiên nào đó vỡ nợ, hoặc bị ung thư.
+
+Bộ dữ liệu trên có một số lượng nhất định các nhãn bị gắn sai. Có thể nào xác định được ranh giới để phân biệt được lỗi gắn nhãn với tính bất định bản chất của dữ liệu hay không?
+
+_Giả sử rằng suất nhãn bị gán sai không phụ thuộc vào từng ca dữ liệu cụ thể mà chỉ phụ thuộc vào đặc tính của các lớp nhãn dữ liệu_. Ví dụ trường hợp phân loại 3 loài vật là chó, mèo và chuột, thì xác suất nhầm chó với mèo cao hơn là nhầm mèo với chuột hoặc chó với chuột.
+
+Có một mô hình dự đoán xác suất dương tính đối với bộ dữ liệu nêu trên. _Giả sử xác suất do mô hình đưa ra có tương quan đủ mạnh đối với phân bố thật sự của nhãn_.
+
+Với những giả sử nêu trên, ta có thể ước lượng được xác suất nhãn gắn trên một ca dữ liệu là thật sự đúng hay không?
+
+## Lỗi quan sát nhãn là gì?
+
+Với một đối tượng khảo sát, quan sát viên sẽ quan sát, xem xét, nghiên cứu rồi gán một nhãn nhất định cho dữ liệu đó. Trong môi trường lý tưởng thì ta sẽ nhận định và gán đúng nhãn “chân lý" cho đối tượng.
+
+Ví dụ ta có thể quan sát ngực, bụng, mông của một người nào đó và nhận định giới tính. Trong thực tế thì có thể xảy ra nhầm lẫn ở một bước nào đó trong quá trình từ khi bắt đầu quan sát cho đến khi gắn xong nhãn. Nhầm lẫn đó có thể dẫn tới gán nhầm nhãn “Nam” cho đối tượng vốn là “Nữ”, hoặc ngược lại. Chúng ta gọi "lỗi quan sát nhãn" và "lỗi gắn nhãn" với cùng một ý nghĩa.
+
+Có thể có một số nam giới và nữ giới có số đo 3 vòng khá giống nhau, nhưng “đương nhiên" họ có 2 giới tính khác nhau, tức là các nhãn “chân lý" của họ là khác nhau về bản chất, chứ không nhất thiết có liên quan đến việc gắn nhãn có lỗi hay không.
+
+Nói cách khác từ số đo 3 vòng ta có thể không suy đoán được chắc chắn 100% nhưng có thể tính được xác suất giới tính Nam/Nữ của đối tượng. Quy tắc hay mô hình suy đoán có thể học được từ một tập dữ liệu có số đo 3 vòng và giới tính tương ứng của nhiều mẫu người khác nhau. Nếu trong tập dữ liệu này có những nhãn giới tính bị gắn sai thì việc học xác suất “chân lý” sẽ bị lệch lạc.
+
+## Quy trình nhiễu theo lớp
+
+Giả sử có một bộ dữ liệu số được gắn nhãn phân loại thành $m$ lớp khác nhau
+$M \defined {1,2,\ldots,m}$.
+Giả sử đối với mỗi mẫu dữ liệu ta có một nhãn "tiềm ẩn" thật là $\yt$.
+Trước khi quan sát được nhãn $\yo$, giả sử có một quy trình gây nhiễu
+biến $\yt=j$ thành $\yo=i$ với xác suất
+$\pt(\yo=i, \yt=j)$ chỉ phụ thuộc vào $i,j \in M$ và độc lập với các mẫu dữ liệu cụ thể,
+
+$$\pt(\yo| \yt; \vect{x}) \equiv \pt(\yo| \yt) \forall\vect{x}.$$
+
+Ví dụ khi phân loại 3 loài vật là chó, mèo và chuột, thì xác suất nhầm chó với mèo cao hơn là nhầm mèo với chuột hoặc chó với chuột, và xác suất đó không phụ thuộc vào từng con thú cụ thể. Giả sử này là hợp lý và thường được sử dụng trong các nghiên cứu về xử lý nhiễu (Goldberger and Ben-Reuven, 2017; Sukhbaatar et al., 2015).
+
+## Ví dụ cụ thể
+
+Xem ví dụ với [dữ liệu cụ thể tại đây](lapros.jl.html).
+
+## Ma trận nhiễu theo lớp
+
+$$\Qt_{\yo, \yt} \defined \left[ {\begin{array}{ccc}
+    \pt(\yo=1, \yt=1) & \ldots & \pt(\yo=1, \yt=m) \\
+    \vdots & \pt(\yo=i, \yt=j) & \vdots \\
+    \pt(\yo=m, \yt=1) & \ldots & \pt(\yo=m, \yt=m) \\
+  \end{array} } \right]$$
+
+là ma trận kích thước $m\times m$ thể hiện phân phối xác suất đồng thời cho $\yo$ và $\yt.$
+
+**Độ thưa** là tỷ lệ số $0$ chiếm lĩnh các vị trí ngoại trừ đường chéo của ma trận $\Qt_{\yo,\yt}$: độ thưa bằng $0$ nói rằng mọi tỷ lệ nhiễu $p_{\yo,\yt}$ đều khác $0$, còn độ thưa $1$ thể hiện tình trạng lý tưởng, hoàn toàn không có nhiễu trong nhãn.
+
+Gọi $\X_{\yo=i}$ là tập hợp các mẫu $\x$ đã được gán nhãn $\yo=i$.
+**Độ tự tin** $\pc_\model(\yo=i; \vect{x}\in\vect{X}_{\yo=i})$
+là xác suất mô hình $\model$ đưa ra đối với mẫu $\vect{x}$, dự đoán nó có label đúng như label $\yo$ đã được gán. *Độ tự tin thấp là một dấu hiệu của khả năng nhãn có lỗi.*

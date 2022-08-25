@@ -1,0 +1,20 @@
+# Cuối cùng
+
+Với các nhãn $\yo_k$ đã quan sát được đối với các mẫu $\x_k\in\X$
+và xác suất $\pyx{\x_k}$ mà một mô hình $\model$ dự đoán mẫu $\x_k\in\X$ có nhãn $i\in M$, chúng ta đã tóm lược phương pháp lọc ra những mẫu có nhãn khả nghi.
+
+## Triển vọng
+
+Một số hướng nghiên cứu tương lai
+
+- Tối ưu hóa giá trị chỉ tiêu tự tin
+- Xử lý với bài toán hồi quy
+- Tương tác qua lại giữa việc học mô hình và việc khử lỗi
+
+## Tham khảo
+
+- Curtis G. Northcutt and Lu Jiang and Isaac L. Chuang (2021). Confident Learning: Estimating Uncertainty in Dataset Labels. Journal of Artificial Intelligence Research (JAIR)
+- [An Introduction to Confident Learning: Finding and Learning with Label Errors in Datasets (curtisnorthcutt.com)](https://l7.curtisnorthcutt.com/confident-learning)
+- [cleanlab/cleanlab: The standard data-centric AI package for data quality and machine learning with messy, real-world data and labels. (github.com)](https://github.com/cleanlab/cleanlab)
+- [Are Label Errors Imperative? Is Confident Learning Useful? | by Suneeta Mall | May, 2022 | Towards Data Science (medium.com)](https://medium.com/towards-data-science/confident-learning-err-did-you-say-your-data-is-clean-ef2597903328)
+- Wei, C., Lee, J. D., Liu, Q., and Ma, T. (2018). On the margin theory of feedforward neural networks. Computing Research Repository (CoRR)

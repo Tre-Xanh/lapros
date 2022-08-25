@@ -1,0 +1,147 @@
+# Phương pháp
+
+## Khái quát
+
+**Đầu vào**
+
+1. Các nhãn $\yo_k$ đã quan sát được đối với các mẫu $\x_k\in\X$
+2. Xác suất $\pyx{\x_k}$ mà mô hình $\model$ dự đoán mẫu $\x_k\in\X$ có nhãn $i\in M$
+
+Mặc nhiên
+
+$$
+\begin{cases}
+\pyx{\x} \geq 0 & \quad\forall i\in M, \forall\x\in\X \\
+\sum\limits_{i\in M}{\pyx{\x}} \equiv 1 & \quad\forall \x\in\X
+\end{cases}
+$$ {#eq-probasum1}
+
+**Các bước**
+
+1. Tính $t_i$, độ tự tin trung bình theo $\model$ trong từng lớp $i\in M$
+2. Ước lượng phân bố xác suất đồng thời $\Qt_{\yo, \yt}$ cho nhãn quan sát và nhãn thật
+3. *Lọc và xếp hạng các mẫu theo mức độ khả nghi nhãn bị lỗi*
+4. Loại bỏ các mẫu khả nghi nhất là nhãn bị lỗi
+5. Đặt trọng số cho các mẫu trong từng lớp $i\in M$ để học một mô hình mới.
+
+## Chỉ tiêu tự tin
+
+Gọi số lượng mẫu được quan sát có nhãn $\yo=i$ là
+$\vect{C}_{\yo=i} \defined |\X_{\yo=i}|.$
+
+Độ tự tin trung bình của mô hình $\model$ đối với lớp $i\in M$ là
+
+$$
+  \thres_i = \frac{1}{\vect{C}_{\yo=i}}
+  {\sum\limits_{\x\in\X_{\yo=i}}\pyx{\x}}.
+$$ {#eq-avgconfidence}
+
+Vì phép tính trung bình được thực hiện trên từng tập
+$\X_{\yo=i}$
+nên có thể $\sum\limits_{i\in M}{\thres_i} \neq 1.$
+Ta đề xuất lấy trung bình trên toàn bộ tập $\X$
+nếu $\X_{\yo=i}\equiv\emptyset.$
+
+Với mỗi lớp $i\in M$ ta chọn chỉ tiêu tự tin $\thres_i\in(0,1)$
+bằng độ tự tin trung bình @eq-avgconfidence.
+Đối với từng mẫu $\x$ và từng nhãn $i$, giá trị xác suất dự đoán
+$\pyx{\x}$ đưa ra bởi mô hình $\model$,
+nếu không nhỏ hơn chỉ tiêu $\thres_i$ thì ta cho rằng nhãn $i$ có khả năng đúng với mẫu $\x$.
+Tập hợp nhãn khả dĩ đối với mẫu $\x$ là
+
+\newcommand{\Lmtx}{L_{\model,\thres}(\x)}
+\newcommand{\lmtx}{\hat{l}_{\model,\thres}(\x)}
+
+$$
+\Lmtx \defined \left\{i\in M: \pyx{\x}\geq \thres_i\right\}
+$$ {#eq-eq2}
+
+Với giả định xác suất @eq-probasum1
+và chỉ tiêu tự tin @eq-avgconfidence,
+với kỳ vọng $\Lmtx\neq\emptyset,$
+CleanLab (Curtis et al.’s 2021)
+chọn một nhãn có xác suất dự đoán lớn nhất:
+$$
+\lmtx \defined
+\amax_{i\in \Lmtx}\pyx{\x}
+$$ {#eq-lmtxcleanlab}
+
+để làm nhãn "đáng tin nhất" cho mẫu $\x.$
+
+Ta đề xuất
+bù trừ chỉ tiêu vào công thức trên để cân đối với độ tự tin của mô hình,
+đồng thời
+nới lỏng ràng buộc $i\in \Lmtx$ để tránh trường hợp không chọn được nhãn đáng tin,
+$$
+\lmtx \defined
+\amax_{i\in M}\{\pyx{\x} - \thres_i\}.
+$$ {#eq-lmtxdef}
+
+## Xếp hạng khả nghi
+
+Gọi $\Xt_{\yo=i,\yt=j}$ là tập (bất khả tri) các mẫu có nhãn quan sát là $i$ và nhãn thật là $j$, ta ước lượng nó bằng cách dùng các nhãn đáng tin nhất $\lmtx$ tại @eq-lmtxdef:
+
+$$
+\Xc_{\yo=i,\yt=j} \defined
+\left\{\x\in\X_{\yo=i}:
+\hat{l}_{\model(\x),\thres} \equiv j
+\right\}
+$$ {#eq-eq3b}
+
+Đơn thuần (mà lại hiệu quả) nhất, ta nghi ngờ
+các mẫu $\left\{\x\in\Xc_{\yo=i,\yt=j}: i\neq j\right\}$
+nằm ngoài đường chéo của ma trận
+$\Xc_{\yo,\yt}$
+là có nhãn lỗi.
+Xếp hạng mức độ khả nghi của các mẫu đó
+dựa theo xác suất do mô hình $\model$ dự đoán:
+$$
+\ec({\x}) \defined \max_{j\neq i}{\pyix{j}{\x}}
+-\pyx{\x}\quad \forall \x\in\X_{\yo=i}
+$$ {#eq-errnoise}
+theo cách làm trong CleanLab của Curtis et al.’s (2021), và đảo dấu so với Wei et al.’s (2018).
+
+Chúng tôi đề xuất bù trừ chỉ tiêu tự tin vào để tính độ khả nghi:
+$$
+e_\thres(\x) \defined
+\max_{j\neq i}{\{\pyix{j}{\x}-\thres_j\}}
+-\{\pyx{\x} - \thres_i\}
+\quad \forall \x\in\X_{\yo=i};
+$$ {#eq-eq4}
+bảo đảm
+$e_\thres(\x)\in[0,1].$
+
+## Ước lượng ma trận nhiễu
+
+Ma trận đếm cặp nhãn $\C_{\yo,\yt}$ kích thước $m\times m$
+lưu số phần tử của các tập $\Xc_{\yo=i,\yt=j}$,
+
+$$
+\C_{\yo=i,\yt=j} \defined  |\Xc_{\yo=i,\yt=j} |
+$$ {#eq-eq5}
+
+ví dụ $\C_{\yo=3,\yt=1} = 10$ có nghĩa là, đếm được
+10 mẫu được gán nhãn $3$ nhưng "thật ra" nên có nhãn $1.$
+
+Vì @eq-eq3b ước lượng
+$\Xc_{\yo=i,\yt=j}\approx\Xt_{\yo=i,\yt=j}$ cho nên
+$\sum\limits_{j\in M}\C_{\yo=i,\yt=j}
+\approx \vect{C}_{\yo=i}.$
+
+Hiệu chỉnh ma trận đếm cặp nhãn qua hai bước.
+Bước đầu, hiệu chỉnh từng dòng theo số mẫu của từng lớp đã quan sát $i\in M,$
+
+$$
+\check{Q}_{\yo=i,\yt=j} = \frac{\C_{\yo=i,\yt=j}}{\sum\limits_{j\in M}\C_{\yo=i,\yt=j}}
+{\vect{C}_{\yo=i}}.
+$$ {#eq-eq6a}
+
+Cuối cùng, ta chia đều toàn bộ để tổng ma trận trở thành $1.$
+
+$$
+\Qc_{\yo=i,\yt=j}=\frac{\check{Q}_{\yo=i,\yt=j}}{\sum\limits_{i,j\in M}\check{Q}_{\yo=i,\yt=j}}.
+$$ {#eq-eq6b}
+
+Curtis et al.’s (2021) trình bày một số
+phương pháp dùng ma trận nhiễu @eq-eq6b
+để chọn lọc và xếp hạng nhãn khả nghi có lỗi.

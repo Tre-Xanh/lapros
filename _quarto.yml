@@ -1,0 +1,23 @@
+project:
+  type: book
+
+book:
+  title: "LaPros"
+  author: "Võ Chí Công"
+  date: "2022/8/25"
+  chapters:
+    - index.qmd
+    - 20-method.qmd
+    - 90-final.qmd
+
+crossref:
+  eq-prefix: Eq
+  chapters: false
+
+format:
+  html:
+    theme: cosmo
+    include-before-body: preamble.md
+  pdf:
+    documentclass: scrreprt
+    include-in-header: preamble.tex
