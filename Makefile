@@ -1,14 +1,13 @@
-all: pdf
+all: preview
 
-pdf: docs/_main.pdf
-docs/_main.pdf: index.Rmd
-	make bookdown
+preview:
+	quarto preview
 
-bookdown:
-	Rscript -e "bookdown::render_book('index.Rmd', 'all')"
+publish:
+	quarto publish gh-pages
+
+pdf:
+	quarto render
 
 pluto:
 	julia -e "using Pluto; Pluto.run()"
-
-env:
-	Rscript -e 'install.packages("bookdown")'

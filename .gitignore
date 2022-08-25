@@ -1,1 +1,5 @@
 data
+
+/_book/
+/.quarto/
+.DS_Store
