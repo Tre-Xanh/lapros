@@ -1,13 +1,15 @@
 all: preview
 
+FORMAT?=html
+
 preview:
-	quarto preview
+	quarto preview --no-browser --to $(FORMAT)
 
 publish:
-	quarto publish gh-pages
+	quarto publish gh-pages --no-browser
 
-pdf:
-	quarto render
+render:
+	quarto render --to pdf
 
 pluto:
 	julia -e "using Pluto; Pluto.run()"

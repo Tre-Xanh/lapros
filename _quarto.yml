@@ -5,10 +5,11 @@ book:
   title: "LaPros"
   author: "Võ Chí Công"
   date: "2022/8/25"
+  downloads: pdf
   chapters:
     - index.qmd
-    - 20-method.qmd
-    - 90-final.qmd
+    - doc/20-method.qmd
+    - doc/90-final.qmd
 
 crossref:
   eq-prefix: Eq
@@ -17,7 +18,7 @@ crossref:
 format:
   html:
     theme: cosmo
-    include-before-body: preamble.md
+    include-before-body: doc/preamble.md
   pdf:
     documentclass: scrreprt
-    include-in-header: preamble.tex
+    include-in-header: doc/preamble.tex
