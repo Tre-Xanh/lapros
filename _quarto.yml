@@ -10,6 +10,10 @@ book:
     - index.qmd
     - doc/20-method.qmd
     - doc/90-final.qmd
+  repo-url: https://github.com/Tre-Xanh/lapros
+
+comments:
+  hypothesis: true
 
 crossref:
   eq-prefix: Eq
