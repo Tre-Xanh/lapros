@@ -7,50 +7,50 @@
     "text": "$$\n\\newcommand{\\yt}{\\dot{y}}\n\\newcommand{\\yo}{\\tilde{y}}\n\\newcommand{\\vect}[1]{{\\boldsymbol{{#1}}}}\n\\newcommand{\\x}{\\vect{x}}\n\\newcommand{\\thres}{\\vect{t}}\n\\newcommand{\\X}{\\vect{X}}\n\\newcommand{\\Xt}{\\dot{\\X}}\n\\newcommand{\\Xc}{{\\X}}\n\\newcommand{\\model}{{\\vect{\\phi}}}\n\\newcommand{\\C}{{\\vect{C}}}\n\\newcommand{\\Ccheck}{\\check{\\vect{C}}}\n\\newcommand{\\pt}{\\dot{p}}\n\\newcommand{\\pc}{p}\n\\newcommand{\\pyix}[2]{\\pc_{\\yo={#1}}({#2})}\n\\newcommand{\\pyx}[1]{\\pyix{i}{#1}}\n\\newcommand{\\ec}{{e}}\n\\newcommand{\\Qt}{\\dot{\\vect{Q}}}\n\\newcommand{\\Qc}{\\vect{Q}}\n\\newcommand{\\amax}{\\mathop{\\arg\\max}\\limits}\n\\newcommand{\\defined}{≔}\n$$"
   },
   {
-    "objectID": "20-method.html",
-    "href": "20-method.html",
+    "objectID": "doc/20-method.html",
+    "href": "doc/20-method.html",
     "title": "2  Phương pháp",
     "section": "",
     "text": "Đầu vào\n\nCác nhãn \\(\\yo_k\\) đã quan sát được đối với các mẫu \\(\\x_k\\in\\X\\)\nXác suất \\(\\pyx{\\x_k}\\) mà mô hình \\(\\model\\) dự đoán mẫu \\(\\x_k\\in\\X\\) có nhãn \\(i\\in M\\)\n\nMặc nhiên\n\\[\n\\begin{cases}\n\\pyx{\\x} \\geq 0 & \\quad\\forall i\\in M, \\forall\\x\\in\\X \\\\\n\\sum\\limits_{i\\in M}{\\pyx{\\x}} \\equiv 1 & \\quad\\forall \\x\\in\\X\n\\end{cases}\n\\tag{1}\\]\nCác bước\n\nTính \\(t_i\\), độ tự tin trung bình theo \\(\\model\\) trong từng lớp \\(i\\in M\\)\nƯớc lượng phân bố xác suất đồng thời \\(\\Qt_{\\yo, \\yt}\\) cho nhãn quan sát và nhãn thật\nLọc và xếp hạng các mẫu theo mức độ khả nghi nhãn bị lỗi\nLoại bỏ các mẫu khả nghi nhất là nhãn bị lỗi\nĐặt trọng số cho các mẫu trong từng lớp \\(i\\in M\\) để học một mô hình mới."
   },
   {
-    "objectID": "20-method.html#chỉ-tiêu-tự-tin",
-    "href": "20-method.html#chỉ-tiêu-tự-tin",
+    "objectID": "doc/20-method.html#chỉ-tiêu-tự-tin",
+    "href": "doc/20-method.html#chỉ-tiêu-tự-tin",
     "title": "2  Phương pháp",
     "section": "2 Chỉ tiêu tự tin",
     "text": "2 Chỉ tiêu tự tin\nGọi số lượng mẫu được quan sát có nhãn \\(\\yo=i\\) là \\(\\vect{C}_{\\yo=i} \\defined |\\X_{\\yo=i}|.\\)\nĐộ tự tin trung bình của mô hình \\(\\model\\) đối với lớp \\(i\\in M\\) là\n\\[\n  \\thres_i = \\frac{1}{\\vect{C}_{\\yo=i}}\n  {\\sum\\limits_{\\x\\in\\X_{\\yo=i}}\\pyx{\\x}}.\n\\tag{2}\\]\nVì phép tính trung bình được thực hiện trên từng tập \\(\\X_{\\yo=i}\\) nên có thể \\(\\sum\\limits_{i\\in M}{\\thres_i} \\neq 1.\\) Ta đề xuất lấy trung bình trên toàn bộ tập \\(\\X\\) nếu \\(\\X_{\\yo=i}\\equiv\\emptyset.\\)\nVới mỗi lớp \\(i\\in M\\) ta chọn chỉ tiêu tự tin \\(\\thres_i\\in(0,1)\\) bằng độ tự tin trung bình Eq 2. Đối với từng mẫu \\(\\x\\) và từng nhãn \\(i\\), giá trị xác suất dự đoán \\(\\pyx{\\x}\\) đưa ra bởi mô hình \\(\\model\\), nếu không nhỏ hơn chỉ tiêu \\(\\thres_i\\) thì ta cho rằng nhãn \\(i\\) có khả năng đúng với mẫu \\(\\x\\). Tập hợp nhãn khả dĩ đối với mẫu \\(\\x\\) là\n\\[\nL_{\\model,\\thres}(\\x)\\defined \\left\\{i\\in M: \\pyx{\\x}\\geq \\thres_i\\right\\}\n\\tag{3}\\]\nVới giả định xác suất Eq 1 và chỉ tiêu tự tin Eq 2, với kỳ vọng \\(L_{\\model,\\thres}(\\x)\\neq\\emptyset,\\) CleanLab (Curtis et al.’s 2021) chọn một nhãn có xác suất dự đoán lớn nhất: \\[\n\\hat{l}_{\\model,\\thres}(\\x)\\defined\n\\amax_{i\\in L_{\\model,\\thres}(\\x)}\\pyx{\\x}\n\\tag{4}\\]\nđể làm nhãn “đáng tin nhất” cho mẫu \\(\\x.\\)\nTa đề xuất bù trừ chỉ tiêu vào công thức trên để cân đối với độ tự tin của mô hình, đồng thời nới lỏng ràng buộc \\(i\\in L_{\\model,\\thres}(\\x)\\) để tránh trường hợp không chọn được nhãn đáng tin, \\[\n\\hat{l}_{\\model,\\thres}(\\x)\\defined\n\\amax_{i\\in M}\\{\\pyx{\\x} - \\thres_i\\}.\n\\tag{5}\\]"
   },
   {
-    "objectID": "20-method.html#xếp-hạng-khả-nghi",
-    "href": "20-method.html#xếp-hạng-khả-nghi",
+    "objectID": "doc/20-method.html#xếp-hạng-khả-nghi",
+    "href": "doc/20-method.html#xếp-hạng-khả-nghi",
     "title": "2  Phương pháp",
     "section": "3 Xếp hạng khả nghi",
     "text": "3 Xếp hạng khả nghi\nGọi \\(\\Xt_{\\yo=i,\\yt=j}\\) là tập (bất khả tri) các mẫu có nhãn quan sát là \\(i\\) và nhãn thật là \\(j\\), ta ước lượng nó bằng cách dùng các nhãn đáng tin nhất \\(\\hat{l}_{\\model,\\thres}(\\x)\\) tại Eq 5:\n\\[\n\\Xc_{\\yo=i,\\yt=j} \\defined\n\\left\\{\\x\\in\\X_{\\yo=i}:\n\\hat{l}_{\\model(\\x),\\thres} \\equiv j\n\\right\\}\n\\tag{6}\\]\nĐơn thuần (mà lại hiệu quả) nhất, ta nghi ngờ các mẫu \\(\\left\\{\\x\\in\\Xc_{\\yo=i,\\yt=j}: i\\neq j\\right\\}\\) nằm ngoài đường chéo của ma trận \\(\\Xc_{\\yo,\\yt}\\) là có nhãn lỗi. Xếp hạng mức độ khả nghi của các mẫu đó dựa theo xác suất do mô hình \\(\\model\\) dự đoán: \\[\n\\ec({\\x}) \\defined \\max_{j\\neq i}{\\pyix{j}{\\x}}\n-\\pyx{\\x}\\quad \\forall \\x\\in\\X_{\\yo=i}\n\\tag{7}\\] theo cách làm trong CleanLab của Curtis et al.’s (2021), và đảo dấu so với Wei et al.’s (2018).\nChúng tôi đề xuất bù trừ chỉ tiêu tự tin vào để tính độ khả nghi: \\[\ne_\\thres(\\x) \\defined\n\\max_{j\\neq i}{\\{\\pyix{j}{\\x}-\\thres_j\\}}\n-\\{\\pyx{\\x} - \\thres_i\\}\n\\quad \\forall \\x\\in\\X_{\\yo=i};\n\\tag{8}\\] bảo đảm \\(e_\\thres(\\x)\\in[0,1].\\)"
   },
   {
-    "objectID": "20-method.html#ước-lượng-ma-trận-nhiễu",
-    "href": "20-method.html#ước-lượng-ma-trận-nhiễu",
+    "objectID": "doc/20-method.html#ước-lượng-ma-trận-nhiễu",
+    "href": "doc/20-method.html#ước-lượng-ma-trận-nhiễu",
     "title": "2  Phương pháp",
     "section": "4 Ước lượng ma trận nhiễu",
     "text": "4 Ước lượng ma trận nhiễu\nMa trận đếm cặp nhãn \\(\\C_{\\yo,\\yt}\\) kích thước \\(m\\times m\\) lưu số phần tử của các tập \\(\\Xc_{\\yo=i,\\yt=j}\\),\n\\[\n\\C_{\\yo=i,\\yt=j} \\defined  |\\Xc_{\\yo=i,\\yt=j} |\n\\tag{9}\\]\nví dụ \\(\\C_{\\yo=3,\\yt=1} = 10\\) có nghĩa là, đếm được 10 mẫu được gán nhãn \\(3\\) nhưng “thật ra” nên có nhãn \\(1.\\)\nVì Eq 6 ước lượng \\(\\Xc_{\\yo=i,\\yt=j}\\approx\\Xt_{\\yo=i,\\yt=j}\\) cho nên \\(\\sum\\limits_{j\\in M}\\C_{\\yo=i,\\yt=j} \\approx \\vect{C}_{\\yo=i}.\\)\nHiệu chỉnh ma trận đếm cặp nhãn qua hai bước. Bước đầu, hiệu chỉnh từng dòng theo số mẫu của từng lớp đã quan sát \\(i\\in M,\\)\n\\[\n\\check{Q}_{\\yo=i,\\yt=j} = \\frac{\\C_{\\yo=i,\\yt=j}}{\\sum\\limits_{j\\in M}\\C_{\\yo=i,\\yt=j}}\n{\\vect{C}_{\\yo=i}}.\n\\tag{10}\\]\nCuối cùng, ta chia đều toàn bộ để tổng ma trận trở thành \\(1.\\)\n\\[\n\\Qc_{\\yo=i,\\yt=j}=\\frac{\\check{Q}_{\\yo=i,\\yt=j}}{\\sum\\limits_{i,j\\in M}\\check{Q}_{\\yo=i,\\yt=j}}.\n\\tag{11}\\]\nCurtis et al.’s (2021) trình bày một số phương pháp dùng ma trận nhiễu Eq 11 để chọn lọc và xếp hạng nhãn khả nghi có lỗi."
   },
   {
-    "objectID": "90-final.html",
-    "href": "90-final.html",
+    "objectID": "doc/90-final.html",
+    "href": "doc/90-final.html",
     "title": "3  Cuối cùng",
     "section": "",
     "text": "Với các nhãn \\(\\yo_k\\) đã quan sát được đối với các mẫu \\(\\x_k\\in\\X\\) và xác suất \\(\\pyx{\\x_k}\\) mà một mô hình \\(\\model\\) dự đoán mẫu \\(\\x_k\\in\\X\\) có nhãn \\(i\\in M\\), chúng ta đã tóm lược phương pháp lọc ra những mẫu có nhãn khả nghi."
   },
   {
-    "objectID": "90-final.html#triển-vọng",
-    "href": "90-final.html#triển-vọng",
+    "objectID": "doc/90-final.html#triển-vọng",
+    "href": "doc/90-final.html#triển-vọng",
     "title": "3  Cuối cùng",
     "section": "1 Triển vọng",
     "text": "1 Triển vọng\nMột số hướng nghiên cứu tương lai\n\nTối ưu hóa giá trị chỉ tiêu tự tin\nXử lý với bài toán hồi quy\nTương tác qua lại giữa việc học mô hình và việc khử lỗi"
   },
   {
-    "objectID": "90-final.html#tham-khảo",
-    "href": "90-final.html#tham-khảo",
+    "objectID": "doc/90-final.html#tham-khảo",
+    "href": "doc/90-final.html#tham-khảo",
     "title": "3  Cuối cùng",
     "section": "2 Tham khảo",
     "text": "2 Tham khảo\n\nCurtis G. Northcutt and Lu Jiang and Isaac L. Chuang (2021). Confident Learning: Estimating Uncertainty in Dataset Labels. Journal of Artificial Intelligence Research (JAIR)\nAn Introduction to Confident Learning: Finding and Learning with Label Errors in Datasets (curtisnorthcutt.com)\ncleanlab/cleanlab: The standard data-centric AI package for data quality and machine learning with messy, real-world data and labels. (github.com)\nAre Label Errors Imperative? Is Confident Learning Useful? | by Suneeta Mall | May, 2022 | Towards Data Science (medium.com)\nWei, C., Lee, J. D., Liu, Q., and Ma, T. (2018). On the margin theory of feedforward neural networks. Computing Research Repository (CoRR)"
