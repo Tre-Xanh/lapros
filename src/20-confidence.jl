@@ -1,11 +1,12 @@
 ### A Pluto.jl notebook ###
-# v0.19.11
+# v0.19.12
 
 using Markdown
 using InteractiveUtils
 
 # ╔═╡ 0911e262-5124-4aa9-b1ba-feacec87b49e
 begin
+	# using Pkg; Pkg.update()
 	import Arrow
 	using Chain: @chain
 	import CSV
@@ -19,10 +20,13 @@ end;
 # ╔═╡ 29cd589c-b3e9-4a65-9641-352129a27c1e
 using PlutoUI; TableOfContents()
 
+# ╔═╡ bdcaae5a-9123-4899-b512-ba11e202018d
+data_folder = "../data/input/"
+
 # ╔═╡ e019b221-ff69-448b-baf3-99e142368a5f
 (data_fp, output_fp) = (
-	("./data/input/lapros-testdata-n10-m3.csv", "./data/output/lapros-rankdata-n10-m3.csv")
-	# ("./data/input/lapros-testdata-n10000000-m3.arrow", "./data/output/lapros-rankdata-n10000000-m3.arrow")
+	(joinpath(data_folder, "lapros-testdata-n10-m3.csv"), joinpath(data_folder, "lapros-rankdata-n10-m3.csv"))
+	# (joinpath(data_folder, "lapros-testdata-n10000000-m3.arrow"), joinpath(data_folder, "lapros-rankdata-n10000000-m3.arrow"))
 )
 
 # ╔═╡ 1800ac8f-683d-416e-aef1-802af62ccc81
@@ -99,8 +103,7 @@ p̂
 
 # ╔═╡ 8fadfa66-a730-4f99-aa70-e25fec26cb09
 "Compute the average model confidence for samples in each class.
-If there is no sample in some specific class,
-we take the avarage over all samples."
+If there is no sample in some specific class, take null (missing)."
 function avg_confidence(
 	ps::Array{Float64,2},
 	ys::Array{Int64,1},
@@ -109,12 +112,12 @@ function avg_confidence(
 	m = size(ps, 2)
 	t = zeros(Float64, m)
 	for i ∈ 1:m
-		x_yi = ys .== i
+		x_yi = (ys .== i)
 		# @show i, x_yi
 		if any(x_yi)
 			t[i] = mean(ps[x_yi, i])
 		else
-			t[i] = mean(ps[:, i])
+			t[i] = missing
 		end
 	end
 	t
@@ -152,30 +155,38 @@ md"""
 Danh sách nhãn đáng tin nhất đối với từng mẫu là như sau, trong đó $0$ đánh dấu trường hợp không có nhãn phù hợp.
 """
 
-# ╔═╡ 69e425b0-7b6b-4c2f-afba-70ea787bde54
+# ╔═╡ 9f29abe2-f98a-44af-8420-895f2888780a
 t2p
+
+# ╔═╡ ce883c1c-0d6c-4f02-aae1-c5049904b4bd
+"Find possible labels for each sample."
+function find_likely_label(ps::Array{Float64,2}, t2p::Array{Float64,2})
+	pos_idx = (t2p .> 0)
+	ps = ifelse.(pos_idx, ps, missing)
+	am = argmax(ps, dims=2)
+	likely_labels = last.(Tuple.(am))
+	ll = ifelse.(any(t2p .≥ 0, dims=2)[:], likely_labels, missing)
+	vec(ll)
+end
 
 # ╔═╡ 591f5a84-b437-4b59-9961-bc110e34eeae
 "Find the most likely labels for each sample.
 
-## Params:
-
-- mask_negative: For some specific sample, if the normalized probabilities are all negative then we use 0 to mark that there is no likely class label for the sample."
-function find_likely_label(t2p::Array{Float64,2}, mask_negative::Bool=false)
+For some specific sample, if the normalized probabilities are all negative then we mark that there is no likely class label for the sample."
+function find_likely_label(t2p::Array{Float64,2})
 	# @show t2p
 	am = argmax(t2p, dims=2)
 	# @show am
 	# @time am = am[:]
 	# @show am
 	likely_labels = last.(Tuple.(am))
-	ll = if mask_negative
-		ifelse.(any(t2p .≥ 0, dims=2)[:], likely_labels, 0)
-	else
-		likely_labels
-	end
+	ll = ifelse.(any(t2p .≥ 0, dims=2)[:], likely_labels, missing)
 	vec(ll)
 	# @show ll
 end
+
+# ╔═╡ 60163432-e144-466d-8595-828ad715eb03
+find_likely_label(p̂, t2p)
 
 # ╔═╡ 5921b759-9474-414f-a25a-416aec299afb
 @time l̂ = find_likely_label(t2p)
@@ -185,14 +196,12 @@ md"""
 Xếp các mẫu vào ma trận có hàng thể hiện nhãn đã quan sát $\tilde{y}$, còn cột thể hiện nhãn đáng tin nhất $\hat{l}.$
 """
 
-# ╔═╡ 45b1feb2-45d3-46df-973a-8b95a70ea164
-# Xỹẏ = partition_X(l̂, ỹ, 1:m)
-
 # ╔═╡ 2a49d3be-d6ae-43fd-8fe8-a14800c023c9
 function partition_X(
 	ls::Array{Int64,1},
 	ys::Array{Int64,1},
-	M::Array{Int64,1})
+	M::UnitRange{Int64},
+)
 	# @show ys
 	# @show ls
 	X_partition = [[] for i ∈ M, j ∈ M]
@@ -204,6 +213,12 @@ function partition_X(
 	X_partition
 end
 
+# ╔═╡ 45b1feb2-45d3-46df-973a-8b95a70ea164
+# ╠═╡ disabled = true
+#=╠═╡
+Xỹẏ = partition_X(l̂, ỹ, 1:m)
+  ╠═╡ =#
+
 # ╔═╡ 9c063c91-0497-40c2-8eb1-bdf8060aaf70
 md"""
 ## Độ khả nghi
@@ -213,6 +228,9 @@ md"""
 
 # ╔═╡ 14d5fa77-7393-41ef-95e2-6848976c3346
 t2p
+
+# ╔═╡ eed60900-7662-4833-978e-b7cc160ce195
+[missing] .!= [1]
 
 # ╔═╡ f44f3c50-2c8f-4ea6-b712-07fa9f951ffb
 function rank_suspicious(
@@ -224,7 +242,7 @@ function rank_suspicious(
 	# @show ys
 	n,m = size(ps)
 	e = spzeros(Float64, n)
-	ids = (ls.≠ys) .&& (ls.≠0)
+	ids = (ls.≠ys) # .&& .!ismissing.(ls)
 	for k in (1:n)[ids]
 		e[k] = ps[k, ls[k]] - ps[k, ys[k]]
 		# @show k, ls[k], ys[k], e[k]
@@ -247,7 +265,8 @@ function lapros(
 	t = avg_confidence(p, y)
 	t2p = p .- t'
 	@time ll = find_likely_label(t2p)
-	@time rank = rank_suspicious(t2p, ll, y)
+	# @time rank = rank_suspicious(t2p, ll, y)
+	@time rank = rank_suspicious(p, ll, y)
 end
 
 # ╔═╡ 2c9a31f4-6abd-40ef-a3b3-f6eb39eda059
@@ -257,7 +276,10 @@ end
 @assert all(errs .≥ 0)
 
 # ╔═╡ a7dfaa5e-7376-49c7-b025-f16e4c5b8f56
-@time rank = rank_suspicious(t2p, l̂, ỹ)
+@time rank_t = rank_suspicious(t2p, l̂, ỹ)
+
+# ╔═╡ 9f48fa46-20dd-4877-abcd-2b53090dc4c7
+@time rank = rank_suspicious(p̂, l̂, ỹ)
 
 # ╔═╡ 9bb332cb-fc80-42b3-a4d9-e4354bb4720f
 @assert all(errs .≈ rank)
@@ -347,7 +369,7 @@ PlutoUI = "~0.7.39"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.0"
+julia_version = "1.8.5"
 manifest_format = "2.0"
 project_hash = "4b6af47aac154a439bb522a11f7292ebe69c4ff4"
 
@@ -381,9 +403,9 @@ uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
 [[deps.BitIntegers]]
 deps = ["Random"]
-git-tree-sha1 = "5a814467bda636f3dde5c4ef83c30dd0a19928e0"
+git-tree-sha1 = "fc54d5837033a170f3bad307f993e156eefc345f"
 uuid = "c3b6d118-76ef-56ca-8cc7-ebb389d030a1"
-version = "0.2.6"
+version = "0.2.7"
 
 [[deps.CEnum]]
 git-tree-sha1 = "eb4cb44a499229b3b8426dcfb5dd85333951ff90"
@@ -391,10 +413,10 @@ uuid = "fa961155-64e5-5f13-b03f-caf6b980ea82"
 version = "0.4.2"
 
 [[deps.CSV]]
-deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "SentinelArrays", "Tables", "Unicode", "WeakRefStrings"]
-git-tree-sha1 = "873fb188a4b9d76549b81465b1f75c82aaf59238"
+deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "SentinelArrays", "SnoopPrecompile", "Tables", "Unicode", "WeakRefStrings", "WorkerUtilities"]
+git-tree-sha1 = "c700cce799b51c9045473de751e9319bdd1c6e94"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-version = "0.10.4"
+version = "0.10.9"
 
 [[deps.Chain]]
 git-tree-sha1 = "8c4920235f6c561e401dfe569beb8b924adad003"
@@ -409,9 +431,9 @@ version = "0.4.0"
 
 [[deps.CodecZlib]]
 deps = ["TranscodingStreams", "Zlib_jll"]
-git-tree-sha1 = "ded953804d019afa9a3f98981d99b33e3db7b6da"
+git-tree-sha1 = "9c209fb7536406834aa938fb149964b985de6c83"
 uuid = "944b1d66-785c-5afd-91f1-9de20f533193"
-version = "0.7.0"
+version = "0.7.1"
 
 [[deps.CodecZstd]]
 deps = ["CEnum", "TranscodingStreams", "Zstd_jll"]
@@ -426,15 +448,15 @@ uuid = "3da002f7-5984-5a60-b8a6-cbb66c0b333f"
 version = "0.11.4"
 
 [[deps.Compat]]
-deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
-git-tree-sha1 = "9be8be1d8a6f44b96482c8af52238ea7987da3e3"
+deps = ["Dates", "LinearAlgebra", "UUIDs"]
+git-tree-sha1 = "7a60c856b9fa189eb34f5f8a6f6b5529b7942957"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "3.45.0"
+version = "4.6.1"
 
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "0.5.2+0"
+version = "1.0.1+0"
 
 [[deps.Crayons]]
 git-tree-sha1 = "249fe38abf76d48563e2f4556bebd215aa317e15"
@@ -442,15 +464,15 @@ uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
 version = "4.1.1"
 
 [[deps.DataAPI]]
-git-tree-sha1 = "fb5f5316dd3fd4c5e7c30a24d50643b73e37cd40"
+git-tree-sha1 = "e8119c1a33d267e16108be441a287a6981ba1630"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
-version = "1.10.0"
+version = "1.14.0"
 
 [[deps.DataFrames]]
 deps = ["Compat", "DataAPI", "Future", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrettyTables", "Printf", "REPL", "Reexport", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
-git-tree-sha1 = "daa21eb85147f72e41f6352a57fccea377e310a9"
+git-tree-sha1 = "db2a9cb664fcea7836da4b414c3278d71dd602d2"
 uuid = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-version = "1.3.4"
+version = "1.3.6"
 
 [[deps.DataStructures]]
 deps = ["Compat", "InteractiveUtils", "OrderedCollections"]
@@ -467,29 +489,21 @@ version = "1.0.0"
 deps = ["Printf"]
 uuid = "ade2ca70-3891-5945-98fb-dc099432e06a"
 
-[[deps.DelimitedFiles]]
-deps = ["Mmap"]
-uuid = "8bb1440f-4735-579b-a4ab-409b98df4dab"
-
-[[deps.Distributed]]
-deps = ["Random", "Serialization", "Sockets"]
-uuid = "8ba89e20-285c-5b6f-9357-94700520ee1b"
-
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
 version = "1.6.0"
 
 [[deps.ExprTools]]
-git-tree-sha1 = "56559bbef6ca5ea0c0818fa5c90320398a6fbf8d"
+git-tree-sha1 = "c1d06d129da9f55715c6c212866f5b1bddc5fa00"
 uuid = "e2ba6199-217a-4e67-a87a-7c52f15ade04"
-version = "0.1.8"
+version = "0.1.9"
 
 [[deps.FilePathsBase]]
 deps = ["Compat", "Dates", "Mmap", "Printf", "Test", "UUIDs"]
-git-tree-sha1 = "129b104185df66e408edd6625d480b7f9e9823a0"
+git-tree-sha1 = "e27c4ebe80e8699540f2d6c805cc12203b614f12"
 uuid = "48062228-2e41-5def-b9a4-89aafe57970f"
-version = "0.9.18"
+version = "0.9.20"
 
 [[deps.FileWatching]]
 uuid = "7b1f6079-737a-58dc-b8bc-7a2ca5c1b5ee"
@@ -530,18 +544,18 @@ version = "0.2.2"
 
 [[deps.InlineStrings]]
 deps = ["Parsers"]
-git-tree-sha1 = "d19f9edd8c34760dca2de2b503f969d8700ed288"
+git-tree-sha1 = "9cc2baf75c6d09f9da536ddf58eb2f29dedaf461"
 uuid = "842dd82b-1e85-43dc-bf29-5d0ee9dffc48"
-version = "1.1.4"
+version = "1.4.0"
 
 [[deps.InteractiveUtils]]
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
 [[deps.InvertedIndices]]
-git-tree-sha1 = "bee5f1ef5bf65df56bdd2e40447590b272a5471f"
+git-tree-sha1 = "0dc7b50b8d436461be01300fd8cd45aa0274b038"
 uuid = "41ab1584-1d38-5bbf-9106-f11c6c58b48f"
-version = "1.1.0"
+version = "1.3.0"
 
 [[deps.IteratorInterfaceExtensions]]
 git-tree-sha1 = "a3f24677c21f5bbe9d2a714f95dcd58337fb2856"
@@ -599,6 +613,11 @@ git-tree-sha1 = "5d494bc6e85c4c9b626ee0cab05daa4085486ab1"
 uuid = "5ced341a-0733-55b8-9ab6-a4889d929147"
 version = "1.9.3+0"
 
+[[deps.MIMEs]]
+git-tree-sha1 = "65f28ad4b594aebe22157d6fac869786a255b7eb"
+uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
+version = "0.1.4"
+
 [[deps.Markdown]]
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
@@ -610,18 +629,18 @@ version = "2.28.0+0"
 
 [[deps.Missings]]
 deps = ["DataAPI"]
-git-tree-sha1 = "bf210ce90b6c9eed32d25dbcae1ebc565df2687f"
+git-tree-sha1 = "f66bdc5de519e8f8ae43bdc598782d35a25b1272"
 uuid = "e1d29d7a-bbdc-5cf2-9ac0-f12de2c33e28"
-version = "1.0.2"
+version = "1.1.0"
 
 [[deps.Mmap]]
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[deps.Mocking]]
 deps = ["Compat", "ExprTools"]
-git-tree-sha1 = "29714d0a7a8083bba8427a4fbfb00a540c681ce7"
+git-tree-sha1 = "782e258e80d68a73d8c916e55f8ced1de00c2cea"
 uuid = "78c3b35d-d492-501b-9361-3d52fe80e533"
-version = "0.7.3"
+version = "0.7.6"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
@@ -642,10 +661,10 @@ uuid = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 version = "1.4.1"
 
 [[deps.Parsers]]
-deps = ["Dates"]
-git-tree-sha1 = "0044b23da09b5608b4ecacb4e5e6c6332f833a7e"
+deps = ["Dates", "SnoopPrecompile"]
+git-tree-sha1 = "478ac6c952fddd4399e71d4779797c538d0ff2bf"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.3.2"
+version = "2.5.8"
 
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
@@ -653,10 +672,10 @@ uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 version = "1.8.0"
 
 [[deps.PlutoUI]]
-deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "Markdown", "Random", "Reexport", "UUIDs"]
-git-tree-sha1 = "8d1f54886b9037091edf146b517989fc4a09efec"
+deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
+git-tree-sha1 = "5bb5129fdd62a2bbbe17c2756932259acf467386"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-version = "0.7.39"
+version = "0.7.50"
 
 [[deps.PooledArrays]]
 deps = ["DataAPI", "Future"]
@@ -689,9 +708,10 @@ deps = ["SHA", "Serialization"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[deps.RecipesBase]]
-git-tree-sha1 = "6bf3f380ff52ce0832ddd3a2a7b9538ed1bcca7d"
+deps = ["SnoopPrecompile"]
+git-tree-sha1 = "261dddd3b862bd2c940cf6ca4d1c8fe593e457c8"
 uuid = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
-version = "1.2.1"
+version = "1.3.3"
 
 [[deps.Reexport]]
 git-tree-sha1 = "45e428421666073eab6f2da5c9d310d99bb12f9b"
@@ -704,31 +724,33 @@ version = "0.7.0"
 
 [[deps.Scratch]]
 deps = ["Dates"]
-git-tree-sha1 = "f94f779c94e58bf9ea243e77a37e16d9de9126bd"
+git-tree-sha1 = "30449ee12237627992a99d5e30ae63e4d78cd24a"
 uuid = "6c6a2e73-6563-6170-7368-637461726353"
-version = "1.1.1"
+version = "1.2.0"
 
 [[deps.SentinelArrays]]
 deps = ["Dates", "Random"]
-git-tree-sha1 = "db8481cf5d6278a121184809e9eb1628943c7704"
+git-tree-sha1 = "77d3c4726515dca71f6d80fbb5e251088defe305"
 uuid = "91c51154-3ec4-41a3-a24f-3f23e20d615c"
-version = "1.3.13"
+version = "1.3.18"
 
 [[deps.Serialization]]
 uuid = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 
-[[deps.SharedArrays]]
-deps = ["Distributed", "Mmap", "Random", "Serialization"]
-uuid = "1a1011a3-84de-559e-8e89-a11a2f7dc383"
+[[deps.SnoopPrecompile]]
+deps = ["Preferences"]
+git-tree-sha1 = "e760a70afdcd461cf01a575947738d359234665c"
+uuid = "66db9d55-30c0-4569-8b51-7e840670fc0c"
+version = "1.0.3"
 
 [[deps.Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 
 [[deps.SortingAlgorithms]]
 deps = ["DataStructures"]
-git-tree-sha1 = "b3363d7460f7d098ca0912c69b082f75625d7508"
+git-tree-sha1 = "a4ada03f999bd01b3a25dcaa30b2d929fe537e00"
 uuid = "a2af1166-a08f-5f64-846c-94a0d3cef48c"
-version = "1.0.1"
+version = "1.1.0"
 
 [[deps.SparseArrays]]
 deps = ["LinearAlgebra", "Random"]
@@ -751,14 +773,14 @@ version = "1.0.1"
 
 [[deps.Tables]]
 deps = ["DataAPI", "DataValueInterfaces", "IteratorInterfaceExtensions", "LinearAlgebra", "OrderedCollections", "TableTraits", "Test"]
-git-tree-sha1 = "5ce79ce186cc678bbb5c5681ca3379d1ddae11a1"
+git-tree-sha1 = "1544b926975372da01227b382066ab70e574a3ec"
 uuid = "bd369af6-aec1-5ad0-b16a-f7cc5008161c"
-version = "1.7.0"
+version = "1.10.1"
 
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
-version = "1.10.0"
+version = "1.10.1"
 
 [[deps.Test]]
 deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
@@ -766,20 +788,25 @@ uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[deps.TimeZones]]
 deps = ["Dates", "Downloads", "InlineStrings", "LazyArtifacts", "Mocking", "Printf", "RecipesBase", "Scratch", "Unicode"]
-git-tree-sha1 = "d634a3641062c040fc8a7e2a3ea17661cc159688"
+git-tree-sha1 = "a92ec4466fc6e3dd704e2668b5e7f24add36d242"
 uuid = "f269a46b-ccf7-5d73-abea-4c690281aa53"
-version = "1.9.0"
+version = "1.9.1"
 
 [[deps.TranscodingStreams]]
 deps = ["Random", "Test"]
-git-tree-sha1 = "216b95ea110b5972db65aa90f88d8d89dcb8851c"
+git-tree-sha1 = "94f38103c984f89cf77c402f2a68dbd870f8165f"
 uuid = "3bb67fe8-82b1-5028-8e26-92a6c54297fa"
-version = "0.9.6"
+version = "0.9.11"
 
 [[deps.Tricks]]
 git-tree-sha1 = "6bac775f2d42a611cdfcd1fb217ee719630c4175"
 uuid = "410a4b4d-49e4-4fbc-ab6d-cb71b17b3775"
 version = "0.1.6"
+
+[[deps.URIs]]
+git-tree-sha1 = "074f993b0ca030848b897beff716d93aca60f06a"
+uuid = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
+version = "1.4.2"
 
 [[deps.UUIDs]]
 deps = ["Random", "SHA"]
@@ -794,16 +821,21 @@ git-tree-sha1 = "b1be2855ed9ed8eac54e5caff2afcdb442d52c23"
 uuid = "ea10d353-3f73-51f8-a26c-33c1cb351aa5"
 version = "1.4.2"
 
+[[deps.WorkerUtilities]]
+git-tree-sha1 = "cd1659ba0d57b71a464a29e64dbc67cfe83d54e7"
+uuid = "76eceee3-57b5-4d4a-8e66-0e911cebbf60"
+version = "1.6.1"
+
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
 version = "1.2.12+3"
 
 [[deps.Zstd_jll]]
-deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
-git-tree-sha1 = "e45044cd873ded54b6a5bac0eb5c971392cf1927"
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "c6edfe154ad7b313c01aceca188c05c835c67360"
 uuid = "3161d3a3-bdf6-5164-811a-617609db77b4"
-version = "1.5.2+0"
+version = "1.5.4+0"
 
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl", "OpenBLAS_jll"]
@@ -823,6 +855,7 @@ version = "17.4.0+0"
 
 # ╔═╡ Cell order:
 # ╟─9cb3568a-9b59-438e-9ca0-c10c93247d92
+# ╠═bdcaae5a-9123-4899-b512-ba11e202018d
 # ╠═e019b221-ff69-448b-baf3-99e142368a5f
 # ╠═1800ac8f-683d-416e-aef1-802af62ccc81
 # ╟─34e904a0-5909-4cdd-a025-068dbb1a6cd1
@@ -850,7 +883,9 @@ version = "17.4.0+0"
 # ╟─21b37653-4dc8-48c6-bc31-cd0449b24bc2
 # ╠═f8cbcd15-d2d0-4945-a80b-0e0e615d22e5
 # ╟─5be2ee06-178d-42ec-97b2-b51dbe189633
-# ╠═69e425b0-7b6b-4c2f-afba-70ea787bde54
+# ╠═9f29abe2-f98a-44af-8420-895f2888780a
+# ╠═60163432-e144-466d-8595-828ad715eb03
+# ╠═ce883c1c-0d6c-4f02-aae1-c5049904b4bd
 # ╠═5921b759-9474-414f-a25a-416aec299afb
 # ╠═591f5a84-b437-4b59-9961-bc110e34eeae
 # ╟─451f8698-2c6c-4cf1-8e1a-ede8cc1c535b
@@ -858,7 +893,9 @@ version = "17.4.0+0"
 # ╠═2a49d3be-d6ae-43fd-8fe8-a14800c023c9
 # ╟─9c063c91-0497-40c2-8eb1-bdf8060aaf70
 # ╠═a7dfaa5e-7376-49c7-b025-f16e4c5b8f56
+# ╠═9f48fa46-20dd-4877-abcd-2b53090dc4c7
 # ╠═14d5fa77-7393-41ef-95e2-6848976c3346
+# ╠═eed60900-7662-4833-978e-b7cc160ce195
 # ╠═f44f3c50-2c8f-4ea6-b712-07fa9f951ffb
 # ╠═7edc3678-03fe-4eb8-ab39-f7033a06e93d
 # ╠═b33c68aa-0a24-4622-8e4d-d9abbce885a5
